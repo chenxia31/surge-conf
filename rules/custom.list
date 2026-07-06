@@ -1,0 +1,7 @@
+# Add your custom rules here
+# Domain
+DOMAIN-SUFFIX,example.com,DIRECT
+
+# Keyword
+DOMAIN-KEYWORD,internal,DIRECT
+

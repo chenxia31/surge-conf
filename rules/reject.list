@@ -1,0 +1,5 @@
+# Ads / telemetry examples
+DOMAIN-SUFFIX,doubleclick.net,REJECT
+DOMAIN-SUFFIX,googlesyndication.com,REJECT
+DOMAIN-SUFFIX,app-measurement.com,REJECT
+
