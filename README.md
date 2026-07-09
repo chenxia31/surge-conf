@@ -33,6 +33,13 @@
 | Gemini | `rules/sets/Gemini.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Gemini.list` |
 | YouTube | `rules/sets/YouTube.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/YouTube.list` |
 | Telegram | `rules/sets/Telegram.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Telegram.list` |
+| WeChat | `rules/sets/WeChat.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/WeChat.list` |
+| Netflix | `rules/sets/Netflix.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Netflix.list` |
+| Apple | `rules/sets/Apple.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Apple.list` |
+| BardAI | `rules/sets/BardAI.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/BardAI.list` |
+| China | `rules/sets/China.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/China.list` |
+| iPhone240608 Local PROXY | `rules/sets/iPhone240608-Local-PROXY.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/iPhone240608-Local-PROXY.list` |
+| iPhone240608 Local DIRECT | `rules/sets/iPhone240608-Local-DIRECT.list` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/iPhone240608-Local-DIRECT.list` |
 
 ## 已收录重写（Modules）
 
@@ -49,6 +56,8 @@
 当前机场订阅策略组兼容基线参考：`Flower_Trojan.conf`（iCloud 云盘 Surge 文档）。
 
 推荐保持以下组名：`Proxies`、`HK`、`JP`、`SG`、`TW`、`US`、`YouTube`、`Netflix`、`Telegram`、`Google`、`OpenAI`、`Final` 等，避免规则引用失效。
+
+额外已参考 `iCloud~com~crossutility~quantumult-x/Documents/Profiles/iPhone-240608.conf`，并补充其 `filter_remote` 的 Surge 对应规则与 `filter_local` 转换规则。
 
 ## 使用方式
 

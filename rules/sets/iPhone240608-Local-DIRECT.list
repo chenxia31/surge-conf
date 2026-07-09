@@ -1,0 +1,17 @@
+# Converted from iCloud quanx profile: iPhone-240608.conf [filter_local]
+DOMAIN-KEYWORD,abchina.com.cn
+DOMAIN-SUFFIX,woa.com
+DOMAIN-SUFFIX,micu.hk
+DOMAIN,tv.micu.hk
+DOMAIN,icanhazip.com
+DOMAIN,api.ipify.org
+DOMAIN,ifconfig.me
+DOMAIN,d.docs.live.net
+DOMAIN,localhost2.paperlib.app
+DOMAIN,chenlongxu.v6.rocks
+DOMAIN-KEYWORD,cubox
+IP-CIDR,10.0.0.0/8,no-resolve
+IP-CIDR,127.0.0.0/8,no-resolve
+IP-CIDR,172.16.0.0/12,no-resolve
+IP-CIDR,192.168.0.0/16,no-resolve
+IP-CIDR,224.0.0.0/24,no-resolve

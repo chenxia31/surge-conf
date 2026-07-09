@@ -88,6 +88,20 @@ Claude 在维护机场订阅时，策略组命名与分流应优先对齐以下�
 2. 若机场模板策略组名称不同，优先在模板层做兼容映射，不随意改业务规则里的组名。
 3. 在 `README.md` 记录“机场模板基线：Flower_Trojan 策略组兼容”。
 
+## 10. Quantumult X 规则同步基线（iPhone-240608）
+
+参考文件：
+
+- `/Users/chenlongxu/Library/Mobile Documents/iCloud~com~crossutility~quantumult-x/Documents/Profiles/iPhone-240608.conf`
+
+当前已完成的同步约定：
+
+1. `filter_remote` 优先映射到 Surge 版本规则集并落地到 `rules/sets/`（如 WeChat/Netflix/Apple/BardAI/China）。
+2. `filter_local` 已拆分为：
+   - `rules/sets/iPhone240608-Local-DIRECT.list`
+   - `rules/sets/iPhone240608-Local-PROXY.list`
+3. 在 `surge.conf` 中通过 `RULE-SET` 引用以上文件，避免仅依赖外链。
+
 ---
 
 如无额外说明，Claude 按本文档作为默认维护规范执行。
