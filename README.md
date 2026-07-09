@@ -56,6 +56,7 @@
 当前机场订阅策略组兼容基线参考：`Flower_Trojan.conf`（iCloud 云盘 Surge 文档）。
 
 推荐保持以下组名：`Proxies`、`HK`、`JP`、`SG`、`TW`、`US`、`YouTube`、`Netflix`、`Telegram`、`Google`、`OpenAI`、`Final` 等，避免规则引用失效。
+并保持**节点名称与机场原始下发名称一致**（可调整分组，不改节点名）。
 
 额外已参考 `iCloud~com~crossutility~quantumult-x/Documents/Profiles/iPhone-240608.conf`，并补充其 `filter_remote` 的 Surge 对应规则与 `filter_local` 转换规则。
 
