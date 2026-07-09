@@ -44,6 +44,12 @@
 | Upgrade | `modules/Upgrade.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Upgrade.sgmodule` |
 | BlockHTTPDNS | `modules/BlockHTTPDNS.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/BlockHTTPDNS.sgmodule` |
 
+## 机场模板策略组基线
+
+当前机场订阅策略组兼容基线参考：`Flower_Trojan.conf`（iCloud 云盘 Surge 文档）。
+
+推荐保持以下组名：`Proxies`、`HK`、`JP`、`SG`、`TW`、`US`、`YouTube`、`Netflix`、`Telegram`、`Google`、`OpenAI`、`Final` 等，避免规则引用失效。
+
 ## 使用方式
 
 在 Surge 中导入主配置链接即可使用，后续你只需要维护仓库内容并推送到 GitHub，设备端会按链接更新。
