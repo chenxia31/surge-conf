@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>星语塔罗 · 在线塔罗牌占卜</title>
-<meta name="description" content="静心冥想,向塔罗提问。完整78张韦特塔罗牌,单张指引与过去·现在·未来三牌阵在线占卜。">
+<meta name="description" content="静心冥想,向塔罗提问。完整78张韦特塔罗牌,五种牌阵(单张、时间之流、关系之镜、十字路口、凯尔特十字),根据你的问题给出针对性解答。">
 <style>
   :root {
     --bg: #0b0b1a;
@@ -36,7 +36,7 @@
     0%, 100% { opacity: .15; transform: scale(.8); }
     50%      { opacity: .9;  transform: scale(1.15); }
   }
-  main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 80px; }
+  main { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 0 20px 80px; }
 
   /* ---------- 头部 ---------- */
   header { text-align: center; padding: 56px 0 8px; }
@@ -63,7 +63,7 @@
   /* ---------- 提问 & 牌阵选择 ---------- */
   .panel { text-align: center; }
   .question-box {
-    width: min(520px, 100%);
+    width: min(560px, 100%);
     margin: 0 auto;
     display: block;
     background: rgba(255,255,255,.04);
@@ -77,19 +77,22 @@
   }
   .question-box:focus { border-color: var(--gold); box-shadow: 0 0 18px rgba(212,175,106,.2); }
   .question-box::placeholder { color: #6d6580; }
+  .domain-hint { color: var(--dim); font-size: 13px; margin-top: 10px; min-height: 20px; letter-spacing: .08em; }
+  .domain-hint em { color: var(--gold-bright); font-style: normal; }
 
-  .spreads { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 30px 0 10px; }
+  .spreads { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 28px 0 10px; }
   .spread-btn {
     cursor: pointer; font-family: inherit;
     background: rgba(255,255,255,.03);
     border: 1px solid rgba(212,175,106,.3);
     border-radius: 12px;
     color: var(--ink);
-    padding: 16px 22px; width: 190px;
+    padding: 14px 16px; width: 172px;
     transition: all .3s;
   }
-  .spread-btn .s-name { font-size: 17px; color: var(--gold-bright); letter-spacing: .1em; }
-  .spread-btn .s-desc { font-size: 12.5px; color: var(--dim); margin-top: 7px; line-height: 1.5; }
+  .spread-btn .s-name { font-size: 16.5px; color: var(--gold-bright); letter-spacing: .1em; }
+  .spread-btn .s-count { font-size: 11px; color: var(--gold); letter-spacing: .15em; margin-top: 4px; }
+  .spread-btn .s-desc { font-size: 12.5px; color: var(--dim); margin-top: 7px; line-height: 1.55; }
   .spread-btn:hover, .spread-btn.active {
     border-color: var(--gold);
     background: rgba(212,175,106,.08);
@@ -108,7 +111,6 @@
     box-shadow: 0 4px 24px rgba(212,175,106,.35);
   }
   .go-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212,175,106,.5); }
-  .go-btn:disabled { opacity: .4; cursor: not-allowed; }
 
   /* ---------- 洗牌 / 选牌 ---------- */
   .stage { display: none; text-align: center; }
@@ -154,11 +156,12 @@
 
   /* ---------- 翻牌结果 ---------- */
   .results {
-    display: flex; gap: 26px; justify-content: center; flex-wrap: wrap;
+    display: flex; gap: 24px 20px; justify-content: center; flex-wrap: wrap;
     margin-top: 34px;
   }
   .slot { width: 168px; }
-  .slot-label { color: var(--gold); letter-spacing: .25em; font-size: 14px; margin-bottom: 12px; }
+  .slot-label { color: var(--gold); letter-spacing: .18em; font-size: 14px; margin-bottom: 4px; }
+  .slot-sub { color: var(--dim); font-size: 11.5px; margin-bottom: 10px; letter-spacing: .04em; min-height: 16px; }
   .flip { perspective: 1100px; width: 168px; height: 286px; margin: 0 auto; }
   .flip-inner {
     position: relative; width: 100%; height: 100%;
@@ -194,6 +197,13 @@
   .orientation.up  { color: #a8d8a8; border: 1px solid rgba(168,216,168,.4); }
   .orientation.rev { color: #d89a9a; border: 1px solid rgba(216,154,154,.4); }
 
+  /* 10 张牌阵时缩小卡面 */
+  .results.dense .slot { width: 128px; }
+  .results.dense .flip { width: 128px; height: 218px; }
+  .results.dense .tarot-face .glyph { font-size: 40px; margin-top: 14px; }
+  .results.dense .tarot-face .cn { font-size: 15px; }
+  .results.dense .tarot-face .en { font-size: 9.5px; }
+
   /* ---------- 解读 ---------- */
   .reading {
     margin-top: 44px; text-align: left;
@@ -209,17 +219,21 @@
     margin-bottom: 18px;
     line-height: 1.9;
   }
-  .reading-card h3 { color: var(--gold-bright); font-size: 17px; letter-spacing: .12em; margin-bottom: 8px; }
+  .reading-card h3 { color: var(--gold-bright); font-size: 17px; letter-spacing: .12em; margin-bottom: 4px; }
+  .reading-card .pos-meaning { color: var(--dim); font-size: 13px; margin-bottom: 10px; }
   .reading-card .keywords { color: var(--gold); font-size: 13.5px; letter-spacing: .06em; margin-bottom: 8px; }
-  .reading-card p { color: var(--ink); font-size: 15px; }
+  .reading-card p { color: var(--ink); font-size: 15px; margin-bottom: 6px; }
+  .reading-card .domain-line { color: #c9bfa8; font-size: 14px; border-top: 1px dashed rgba(212,175,106,.25); padding-top: 10px; margin-top: 10px; }
   .summary {
     background: rgba(212,175,106,.07);
     border: 1px solid rgba(212,175,106,.4);
     border-radius: 10px;
-    padding: 22px 26px; line-height: 2;
+    padding: 24px 28px; line-height: 2;
     font-size: 15px;
   }
   .summary h3 { color: var(--gold-bright); letter-spacing: .2em; margin-bottom: 10px; font-size: 17px; }
+  .summary .answer-line { color: var(--gold-bright); }
+  .summary p { margin-bottom: 8px; }
   .again { text-align: center; margin-top: 36px; }
   .link-btn {
     cursor: pointer; font-family: inherit; font-size: 15px;
@@ -242,6 +256,12 @@
     .flip { height: 235px; }
     .tarot-face .glyph { font-size: 44px; margin-top: 16px; }
     .tarot-face .cn { font-size: 16px; }
+    .results { gap: 18px 10px; }
+    .results.dense .slot { width: 105px; }
+    .results.dense .flip { width: 105px; height: 178px; }
+    .results.dense .tarot-face .glyph { font-size: 30px; margin-top: 10px; }
+    .results.dense .tarot-face .cn { font-size: 13px; }
+    .spread-btn { width: 46%; }
   }
 </style>
 </head>
@@ -259,17 +279,9 @@
   <!-- 第一步:提问与选牌阵 -->
   <section class="panel" id="setup">
     <input class="question-box" id="question" type="text" maxlength="60"
-           placeholder="在心中默念你的问题,也可以写在这里(可留空)……">
-    <div class="spreads">
-      <button class="spread-btn active" data-count="1">
-        <div class="s-name">单张指引</div>
-        <div class="s-desc">抽取一张牌<br>获得当下最需要的讯息</div>
-      </button>
-      <button class="spread-btn" data-count="3">
-        <div class="s-name">时间之流</div>
-        <div class="s-desc">过去 · 现在 · 未来<br>看清事情的脉络与走向</div>
-      </button>
-    </div>
+           placeholder="写下你的问题,牌阵会针对它给出解答(留空则为整体指引)……">
+    <p class="domain-hint" id="domainHint"></p>
+    <div class="spreads" id="spreadBox"></div>
     <button class="go-btn" id="startBtn">开始占卜</button>
   </section>
 
@@ -297,38 +309,67 @@
 
 <script>
 /* =========================================================
-   牌库:22 张大阿卡纳 + 56 张小阿卡纳(共 78 张)
+   牌库:22 张大阿卡纳(含 感情/事业/财务 领域解读)
+   字段:中文名, 英文名, 序号, 图形, 正位关键词, 正位释义,
+        逆位关键词, 逆位释义, {love, career, wealth}
    ========================================================= */
 const MAJOR = [
-  ["愚者","The Fool","0","🃏","自由 / 冒险 / 新的开始","你正站在一段旅程的起点。愚者鼓励你放下过度的算计,带着好奇与信任向前迈出一步——未知里藏着礼物。","鲁莽 / 迷失方向","当心因冲动或逃避而偏离正轨。先停下来看清脚下,再决定要不要跳。"],
-  ["魔术师","The Magician","I","🪄","创造 / 行动力 / 心想事成","资源与才能已在你手中,天时地利俱备。此刻专注意念、付诸行动,你有能力把想法变为现实。","三心二意 / 空谈","能量正在被分散或滥用。少一些花哨的计划,多一点脚踏实地的执行。"],
-  ["女祭司","The High Priestess","II","🌒","直觉 / 静观 / 潜意识","答案不在外界的喧嚣里,而在你的直觉深处。安静下来,倾听内心细微的声音,它早已知道方向。","忽视直觉 / 秘而不宣","你可能压抑了内心真实的感受,或忽略了显而易见的暗示。诚实面对自己。"],
-  ["女皇","The Empress","III","🌾","丰盛 / 滋养 / 感受之美","这是一张丰收与孕育之牌。好好照顾自己与所爱之人,享受生活的质感,你付出的爱正在开花结果。","匮乏感 / 过度依赖","当心以爱为名的控制,或因安逸而停滞。先把自己的杯子倒满。"],
-  ["皇帝","The Emperor","IV","🏛️","秩序 / 责任 / 掌控","用理性与纪律为生活立起框架。此刻需要你像领导者一样承担责任、制定规则,稳定局面。","僵化 / 强权","过度的控制欲正在让关系或局面变得僵硬。权威不等于不容置疑。"],
-  ["教皇","The Hierophant","V","📜","传统 / 求教 / 精神指引","向有经验的人求教,或回到经过检验的方法上来。传统与规范此刻是你的助力而非束缚。","教条 / 盲从","别人的地图未必适合你的路。质疑那些「理所当然」,走出自己的理解。"],
-  ["恋人","The Lovers","VI","💞","爱 / 结合 / 价值抉择","一段真诚的联结正在发生,或一个关乎内心价值的选择摆在面前。跟随爱与真实,而非恐惧。","失衡 / 犹豫不决","关系或选择中出现了不一致。逃避抉择本身也是一种抉择,诚实沟通吧。"],
-  ["战车","The Chariot","VII","🏇","意志 / 胜利 / 勇往直前","握紧缰绳,带着决心冲刺。只要方向明确、意志坚定,眼前的障碍终将被你碾过。","失控 / 方向不明","冲得太猛却不知去向何方。先校准目标,别让情绪抢走方向盘。"],
-  ["力量","Strength","VIII","🦁","勇气 / 温柔的坚定 / 驯服","真正的力量不是压制,而是以温柔与耐心驯服内心的猛兽。你比自己想象的更坚韧。","自我怀疑 / 急躁","内心的恐惧或急躁正在消耗你。对自己温柔一点,力量会回来的。"],
-  ["隐士","The Hermit","IX","🏮","独处 / 内省 / 寻找答案","是时候暂离喧嚣,提一盏灯走向内心。独处不是孤僻,而是为了看清自己真正想要什么。","封闭 / 过度孤立","反思变成了逃避,独处变成了隔绝。答案想清楚了,就该回到人群中去。"],
-  ["命运之轮","Wheel of Fortune","X","☸️","转机 / 周期 / 顺势而为","命运之轮正在转动,变化即将到来。抓住上升的时机,接纳无法控制的部分——风向正在变好。","逆流 / 时运不济","眼下或许诸事不顺,但轮子不会永远停在低点。耐心等待,守好基本盘。"],
-  ["正义","Justice","XI","⚖️","公正 / 因果 / 承担后果","事情将得到公允的裁决。诚实面对事实,为自己的选择负责,天平自会给你应得的回报。","偏颇 / 逃避责任","可能存在不公,或你在回避应负的责任。先把账算清楚,才能翻页。"],
-  ["倒吊人","The Hanged Man","XII","🙃","换位思考 / 暂停 / 舍得","停滞未必是坏事。换一个角度看问题,主动放下一些执念,你会看见此前看不见的出路。","徒劳的牺牲 / 拖延","悬而不决正在消耗你。如果付出没有意义,就别再假装等待是策略。"],
-  ["死神","Death","XIII","🦋","结束 / 蜕变 / 新生","一段旧的篇章正在合上——这不是终结,而是蜕变。放手让该结束的结束,新生才有空间。","抗拒改变 / 拖住过去","你在紧抓一些早已完成使命的东西。越不肯放手,过渡期就越漫长。"],
-  ["节制","Temperance","XIV","🕊️","平衡 / 调和 / 细水长流","慢慢来,反而快。调和极端、耐心打磨,让不同的元素在你手中融合成恰到好处的配方。","失衡 / 过度","生活的某个部分用力过猛了。检视你的节奏与配比,把倾斜的天平扶正。"],
-  ["恶魔","The Devil","XV","⛓️","诱惑 / 执念 / 直面阴影","检视那些让你欲罢不能的东西——执念、依赖或诱惑。锁链其实虚掩着,关键是你是否愿意抬手。","挣脱 / 觉察","好消息:你已经开始看清束缚自己的模式。觉察即自由的开端。"],
-  ["高塔","The Tower","XVI","🗼","剧变 / 打破幻象 / 重建","根基不稳的东西正在崩塌。冲击虽然猛烈,但它拆掉的是幻象——废墟之上才能盖起真实的塔。","余震 / 勉强维持","你可能在勉力维持一个该倒的结构。主动拆除,比等它砸下来体面得多。"],
-  ["星星","The Star","XVII","⭐","希望 / 疗愈 / 灵感","风暴过后,星光浮现。这是一张疗愈与希望之牌:保持信念,宇宙正在悄悄回应你的愿望。","信心低落 / 灵感枯竭","暂时看不见星光,不代表它不在。先照顾好自己,希望会重新亮起来。"],
-  ["月亮","The Moon","XVIII","🌕","迷雾 / 情绪 / 不安","眼前的路被月光晕染,真假难辨。不必急着做决定,让情绪流过,等雾散了再走。","拨云见月 / 释怀","困惑正在散去,真相逐渐清晰。之前的不安,大多是想象放大的影子。"],
-  ["太阳","The Sun","XIX","☀️","成功 / 喜悦 / 生命力","阳光毫无保留地照耀着你。尽情庆祝、坦然发光,这是收获喜悦与成功的时刻。","迟来的晴天 / 收敛的光","快乐被乌云暂时遮挡,或你不敢尽情展现自己。晴天已在路上,别怀疑。"],
-  ["审判","Judgement","XX","🎺","觉醒 / 复盘 / 召唤","号角已经吹响:回顾来路,与过去和解,然后回应那个更高的召唤。你已准备好升级。","自我批判 / 装睡","过度苛责自己,或对内心的召唤充耳不闻。宽恕过去,才能接起新篇。"],
-  ["世界","The World","XXI","🌍","圆满 / 达成 / 新循环","一个大循环即将完美收官。庆祝你的抵达,然后带着完整的自己,开启下一段旅程。","差最后一步 / 未竟","目标近在咫尺却迟迟未收尾。找出缺失的那一块拼图,把圆画完。"]
+  ["愚者","The Fool","0","🃏","自由 / 冒险 / 新的开始","你正站在一段旅程的起点。愚者鼓励你放下过度的算计,带着好奇与信任向前迈出一步——未知里藏着礼物。","鲁莽 / 迷失方向","当心因冲动或逃避而偏离正轨。先停下来看清脚下,再决定要不要跳。",
+   {love:"一段轻盈自由的关系或崭新的心动正在靠近,别用过去的框架束缚它",career:"适合尝试新领域、新项目,初生牛犊的勇气就是你的资产",wealth:"可以尝试新的开源方式,但要避免无计划的冲动消费"}],
+  ["魔术师","The Magician","I","🪄","创造 / 行动力 / 心想事成","资源与才能已在你手中,天时地利俱备。此刻专注意念、付诸行动,你有能力把想法变为现实。","三心二意 / 空谈","能量正在被分散或滥用。少一些花哨的计划,多一点脚踏实地的执行。",
+   {love:"主动出击胜过默默等待,真诚的表达会得到回应",career:"资源齐备,正是启动计划、展示才能的窗口期",wealth:"善用技能变现,是谈判与签约的好时机"}],
+  ["女祭司","The High Priestess","II","🌒","直觉 / 静观 / 潜意识","答案不在外界的喧嚣里,而在你的直觉深处。安静下来,倾听内心细微的声音,它早已知道方向。","忽视直觉 / 秘而不宣","你可能压抑了内心真实的感受,或忽略了显而易见的暗示。诚实面对自己。",
+   {love:"感情宜静观其变,答案藏在你的直觉里,不必急着挑明",career:"宜观察积累、少说多听,还不到摊牌的时候",wealth:"暂缓大额决策,先把信息研究透再出手"}],
+  ["女皇","The Empress","III","🌾","丰盛 / 滋养 / 感受之美","这是一张丰收与孕育之牌。好好照顾自己与所爱之人,享受生活的质感,你付出的爱正在开花结果。","匮乏感 / 过度依赖","当心以爱为名的控制,或因安逸而停滞。先把自己的杯子倒满。",
+   {love:"感情进入滋养升温期,享受被爱,也慷慨地付出",career:"成果趋于成熟,创意型的工作尤其顺遂",wealth:"财务丰盈有余裕,适度享受生活并无不可"}],
+  ["皇帝","The Emperor","IV","🏛️","秩序 / 责任 / 掌控","用理性与纪律为生活立起框架。此刻需要你像领导者一样承担责任、制定规则,稳定局面。","僵化 / 强权","过度的控制欲正在让关系或局面变得僵硬。权威不等于不容置疑。",
+   {love:"关系需要承诺与稳定的框架,但当心控制欲盖过温度",career:"建立制度与权威的时机,大胆承担领导责任",wealth:"以纪律理财,长期规划优于短线投机"}],
+  ["教皇","The Hierophant","V","📜","传统 / 求教 / 精神指引","向有经验的人求教,或回到经过检验的方法上来。传统与规范此刻是你的助力而非束缚。","教条 / 盲从","别人的地图未必适合你的路。质疑那些「理所当然」,走出自己的理解。",
+   {love:"传统稳定的相处方式更适合当下,长辈的意见值得一听",career:"向导师与前辈求教,遵循行业规范行事更稳",wealth:"选择稳健合规的渠道,别碰规则模糊的地带"}],
+  ["恋人","The Lovers","VI","💞","爱 / 结合 / 价值抉择","一段真诚的联结正在发生,或一个关乎内心价值的选择摆在面前。跟随爱与真实,而非恐惧。","失衡 / 犹豫不决","关系或选择中出现了不一致。逃避抉择本身也是一种抉择,诚实沟通吧。",
+   {love:"心意相通的联结正在发生,忠于内心去选择",career:"合作关系是成败关键,选择与你价值观一致的伙伴",wealth:"面临取舍时,选长期价值而非眼前诱惑"}],
+  ["战车","The Chariot","VII","🏇","意志 / 胜利 / 勇往直前","握紧缰绳,带着决心冲刺。只要方向明确、意志坚定,眼前的障碍终将被你碾过。","失控 / 方向不明","冲得太猛却不知去向何方。先校准目标,别让情绪抢走方向盘。",
+   {love:"主动争取才有进展,拿出行动力与方向感",career:"目标明确就强势推进,胜利已在望",wealth:"进取无妨,但握紧方向盘,别让欲望失速"}],
+  ["力量","Strength","VIII","🦁","勇气 / 温柔的坚定 / 驯服","真正的力量不是压制,而是以温柔与耐心驯服内心的猛兽。你比自己想象的更坚韧。","自我怀疑 / 急躁","内心的恐惧或急躁正在消耗你。对自己温柔一点,力量会回来的。",
+   {love:"用温柔与耐心化解摩擦,这段感情的韧性正在增强",career:"面对难缠的局面,软实力比硬碰硬更有效",wealth:"克制欲望型消费,耐心是复利最好的朋友"}],
+  ["隐士","The Hermit","IX","🏮","独处 / 内省 / 寻找答案","是时候暂离喧嚣,提一盏灯走向内心。独处不是孤僻,而是为了看清自己真正想要什么。","封闭 / 过度孤立","反思变成了逃避,独处变成了隔绝。答案想清楚了,就该回到人群中去。",
+   {love:"也许需要一段独处来想清楚自己要什么,慢即是快",career:"沉淀打磨专业能力,答案在安静的深耕里",wealth:"减少折腾,守成优于扩张"}],
+  ["命运之轮","Wheel of Fortune","X","☸️","转机 / 周期 / 顺势而为","命运之轮正在转动,变化即将到来。抓住上升的时机,接纳无法控制的部分——风向正在变好。","逆流 / 时运不济","眼下或许诸事不顺,但轮子不会永远停在低点。耐心等待,守好基本盘。",
+   {love:"缘分的齿轮在转动,顺其自然反而会有转机",career:"外部环境正在变化,抓住上升的时间窗口",wealth:"周期在轮转,懂得见好就收、逢低布局"}],
+  ["正义","Justice","XI","⚖️","公正 / 因果 / 承担后果","事情将得到公允的裁决。诚实面对事实,为自己的选择负责,天平自会给你应得的回报。","偏颇 / 逃避责任","可能存在不公,或你在回避应负的责任。先把账算清楚,才能翻页。",
+   {love:"关系需要公平与坦诚,付出与回报要对等",career:"是非对错即将见分晓,合同与规则务必谨慎",wealth:"收支要平衡,该算清的账不要拖"}],
+  ["倒吊人","The Hanged Man","XII","🙃","换位思考 / 暂停 / 舍得","停滞未必是坏事。换一个角度看问题,主动放下一些执念,你会看见此前看不见的出路。","徒劳的牺牲 / 拖延","悬而不决正在消耗你。如果付出没有意义,就别再假装等待是策略。",
+   {love:"试着换位思考,暂时的停滞是为了看清彼此",career:"项目可能悬置,不如借机换个视角复盘",wealth:"短期难有进账,先止损再谈布局"}],
+  ["死神","Death","XIII","🦋","结束 / 蜕变 / 新生","一段旧的篇章正在合上——这不是终结,而是蜕变。放手让该结束的结束,新生才有空间。","抗拒改变 / 拖住过去","你在紧抓一些早已完成使命的东西。越不肯放手,过渡期就越漫长。",
+   {love:"一段旧的相处模式该结束了,放手才有新的可能",career:"旧阶段落幕,转型与告别是必要的阵痛",wealth:"果断斩断持续失血的投入,重整财务结构"}],
+  ["节制","Temperance","XIV","🕊️","平衡 / 调和 / 细水长流","慢慢来,反而快。调和极端、耐心打磨,让不同的元素在你手中融合成恰到好处的配方。","失衡 / 过度","生活的某个部分用力过猛了。检视你的节奏与配比,把倾斜的天平扶正。",
+   {love:"细水长流地经营,磨合出彼此舒适的节奏",career:"协调各方、调和资源是当前的重点课题",wealth:"平衡收支与配置,分散而有度"}],
+  ["恶魔","The Devil","XV","⛓️","诱惑 / 执念 / 直面阴影","检视那些让你欲罢不能的东西——执念、依赖或诱惑。锁链其实虚掩着,关键是你是否愿意抬手。","挣脱 / 觉察","好消息:你已经开始看清束缚自己的模式。觉察即自由的开端。",
+   {love:"警惕沉溺与占有欲,分清爱与依赖的边界",career:"利益诱惑的背后藏着代价,看清了再签字",wealth:"远离高杠杆与成瘾式消费"}],
+  ["高塔","The Tower","XVI","🗼","剧变 / 打破幻象 / 重建","根基不稳的东西正在崩塌。冲击虽然猛烈,但它拆掉的是幻象——废墟之上才能盖起真实的塔。","余震 / 勉强维持","你可能在勉力维持一个该倒的结构。主动拆除,比等它砸下来体面得多。",
+   {love:"关系可能经历剧烈冲击,让假象倒塌、真相浮现",career:"突发变动难以避免,危机也是重建的起点",wealth:"防范意外冲击,现金流优先"}],
+  ["星星","The Star","XVII","⭐","希望 / 疗愈 / 灵感","风暴过后,星光浮现。这是一张疗愈与希望之牌:保持信念,宇宙正在悄悄回应你的愿望。","信心低落 / 灵感枯竭","暂时看不见星光,不代表它不在。先照顾好自己,希望会重新亮起来。",
+   {love:"受过伤的心正在痊愈,请继续对爱保持信念",career:"愿景重新清晰,值得为长期理想续航",wealth:"财务缓慢修复中,保持希望与纪律"}],
+  ["月亮","The Moon","XVIII","🌕","迷雾 / 情绪 / 不安","眼前的路被月光晕染,真假难辨。不必急着做决定,让情绪流过,等雾散了再走。","拨云见月 / 释怀","困惑正在散去,真相逐渐清晰。之前的不安,大多是想象放大的影子。",
+   {love:"猜疑与不安正在被放大,先求证再下结论",career:"信息还不明朗,避免此刻做重大决定",wealth:"当心看不清的陷阱与隐性成本"}],
+  ["太阳","The Sun","XIX","☀️","成功 / 喜悦 / 生命力","阳光毫无保留地照耀着你。尽情庆祝、坦然发光,这是收获喜悦与成功的时刻。","迟来的晴天 / 收敛的光","快乐被乌云暂时遮挡,或你不敢尽情展现自己。晴天已在路上,别怀疑。",
+   {love:"坦荡而热烈的好时光,这段关系充满生命力",career:"成果被看见、被认可,尽情发挥吧",wealth:"收成期已到,阳光下的机会值得把握"}],
+  ["审判","Judgement","XX","🎺","觉醒 / 复盘 / 召唤","号角已经吹响:回顾来路,与过去和解,然后回应那个更高的召唤。你已准备好升级。","自我批判 / 装睡","过度苛责自己,或对内心的召唤充耳不闻。宽恕过去,才能接起新篇。",
+   {love:"旧人旧事可能回访,与过去和解后再向前",career:"认真复盘会带来质变,把握第二次机会",wealth:"清算旧账,财务重启正当时"}],
+  ["世界","The World","XXI","🌍","圆满 / 达成 / 新循环","一个大循环即将完美收官。庆祝你的抵达,然后带着完整的自己,开启下一段旅程。","差最后一步 / 未竟","目标近在咫尺却迟迟未收尾。找出缺失的那一块拼图,把圆画完。",
+   {love:"关系走向圆满,或迎来进入新阶段的里程碑",career:"项目收官、成就达成,准备登上更大的舞台",wealth:"回报兑现,一个财务周期圆满收官"}]
 ];
 
+/* ---------- 小阿卡纳:四花色 × 十四点数 ---------- */
 const SUITS = {
-  "权杖": { en: "Wands",     glyph: "🔥", theme: "行动、热情与事业" },
-  "圣杯": { en: "Cups",      glyph: "🌊", theme: "情感、关系与内心" },
-  "宝剑": { en: "Swords",    glyph: "🌬️", theme: "思维、沟通与挑战" },
-  "星币": { en: "Pentacles", glyph: "🌿", theme: "金钱、身体与现实" }
+  "权杖": { en: "Wands", glyph: "🔥", theme: "行动、热情与事业",
+            d: {love:"权杖关乎激情与主动——感情里的火花由行动点燃",career:"权杖正对应事业的行动力与开拓精神",wealth:"权杖谈的是进取与开源的动能"} },
+  "圣杯": { en: "Cups", glyph: "🌊", theme: "情感、关系与内心",
+            d: {love:"圣杯正是感情之杯——心意、亲密与流动的情感",career:"圣杯提醒你关注工作中的人际与内心的热爱",wealth:"圣杯提示金钱背后的情绪与价值感"} },
+  "宝剑": { en: "Swords", glyph: "🌬️", theme: "思维、沟通与挑战",
+            d: {love:"宝剑指向感情中的沟通、误解与真相",career:"宝剑对应职场中的思辨、竞争与抉择",wealth:"宝剑提醒你理性核算,当心纠纷"} },
+  "星币": { en: "Pentacles", glyph: "🌿", theme: "金钱、身体与现实",
+            d: {love:"星币关乎感情中的安全感与踏实经营",career:"星币正对应事业的落地、报酬与积累",wealth:"星币正是金钱之牌——务实与积累"} }
 };
 
 const RANKS = [
@@ -350,28 +391,75 @@ const RANKS = [
 
 function buildDeck() {
   const deck = MAJOR.map((m, i) => ({
-    id: "M" + i, cn: m[0], en: m[1], num: m[2], glyph: m[3],
-    upKeys: m[4], upText: m[5], revKeys: m[6], revText: m[7]
+    id: "M" + i, major: true, cn: m[0], en: m[1], num: m[2], glyph: m[3],
+    upKeys: m[4], upText: m[5], revKeys: m[6], revText: m[7], d: m[8]
   }));
   for (const suitCn in SUITS) {
     const s = SUITS[suitCn];
     RANKS.forEach((r, i) => {
       deck.push({
-        id: suitCn + i,
+        id: suitCn + i, major: false, suit: suitCn,
         cn: suitCn + r[0],
         en: r[1] + " of " + s.en,
         num: suitCn,
         glyph: s.glyph,
+        essence: r[2],
         upKeys: r[2] + " · 关乎" + s.theme,
         upText: "在" + s.theme + "的领域中," + r[3] + "。",
         revKeys: "受阻的" + r[2],
-        revText: "在" + s.theme + "的领域中," + r[4] + "。"
+        revText: "在" + s.theme + "的领域中," + r[4] + "。",
+        upAct: r[3], revAct: r[4]
       });
     });
   }
   return deck;
 }
 const DECK = buildDeck();
+
+/* =========================================================
+   牌阵定义:labels 为 [位置名, 位置含义]
+   ========================================================= */
+const SPREADS = [
+  { id:"single", name:"单张指引", count:1, desc:"快速获得当下<br>最需要的一句讯息",
+    labels:[["指引","此刻你最需要听见的讯息"]] },
+  { id:"time", name:"时间之流", count:3, desc:"过去 · 现在 · 未来<br>看清事情的脉络走向",
+    labels:[["过去","事情的根源与积累"],["现在","当下的状态与课题"],["未来","顺势发展的走向"]] },
+  { id:"love", name:"关系之镜", count:5, desc:"照见一段关系中<br>彼此的心意与走向",
+    labels:[["你的状态","你在这段关系中的心态"],["对方的状态","对方的心态与感受"],["关系现状","两人之间当下的能量"],["潜在阻碍","需要留意的暗流"],["发展趋势","这段关系的走向"]] },
+  { id:"choice", name:"十字路口", count:5, desc:"在两难抉择之间<br>看清每条路的走向",
+    labels:[["当前处境","你此刻所站立的位置"],["选择 A","走第一条路的走向"],["选择 B","走另一条路的走向"],["内心渴望","你心底真正想要的"],["最终指引","牌阵给你的建议"]] },
+  { id:"celtic", name:"凯尔特十字", count:10, desc:"最经典的深度牌阵<br>全方位透视一个问题",
+    labels:[["现状","事情的核心"],["挑战","横亘眼前的课题"],["根基","潜意识里的基础"],["过去","正在远去的影响"],["目标","你意识中的期望"],["未来","即将浮现的能量"],["自我","你的态度与位置"],["环境","他人与外界的影响"],["希望与恐惧","内心深处的期待与担忧"],["结局","事情的最终走向"]] }
+];
+
+/* =========================================================
+   问题主题识别
+   ========================================================= */
+const DOMAINS = {
+  love:   { name:"感情",    kw:/爱情|感情|恋|喜欢|暗恋|复合|分手|结婚|婚姻|脱单|表白|挽回|对象|男朋友|女朋友|男友|女友|前任|桃花|婚|情/ },
+  career: { name:"事业与学业", kw:/工作|事业|职|升职|加薪|跳槽|面试|offer|老板|同事|创业|项目|考试|学业|考研|考公|学习|论文|毕业|晋升|转行/ },
+  wealth: { name:"财务",    kw:/钱|财|投资|股票|基金|收入|工资|买房|欠|债|赚|亏|理财/ }
+};
+function detectDomain(q) {
+  if (!q) return null;
+  for (const key in DOMAINS) if (DOMAINS[key].kw.test(q)) return key;
+  return "general";
+}
+function domainName(key) { return key && DOMAINS[key] ? DOMAINS[key].name : "整体"; }
+
+/* 针对某张牌 × 某个领域,给出领域解读句 */
+function domainLine(p, dKey) {
+  if (!dKey || dKey === "general") return "";
+  const c = p.card;
+  if (c.major) {
+    let line = c.d[dKey];
+    if (p.reversed) line += "——此牌逆位,这股能量目前以受阻或过度的方式呈现,请对照上面的逆位提示调整";
+    return "落在「" + domainName(dKey) + "」的问题上:" + line + "。";
+  }
+  const frame = SUITS[c.suit].d[dKey];
+  const act = p.reversed ? c.revAct : c.upAct;
+  return "落在「" + domainName(dKey) + "」的问题上:" + frame + ";此刻的功课是「" + c.essence + "」——" + act + "。";
+}
 
 /* =========================================================
    星空背景
@@ -396,23 +484,42 @@ const DECK = buildDeck();
    占卜流程
    ========================================================= */
 const $ = id => document.getElementById(id);
-const SLOT_LABELS = { 1: ["指引"], 3: ["过去", "现在", "未来"] };
-let spreadCount = 1;
+let spread = SPREADS[0];
 let picked = [];
 let revealedCount = 0;
+let qDomain = null;
 
-document.querySelectorAll(".spread-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".spread-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    spreadCount = +btn.dataset.count;
+/* 渲染牌阵按钮 */
+(function renderSpreads() {
+  const box = $("spreadBox");
+  SPREADS.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.className = "spread-btn" + (i === 0 ? " active" : "");
+    b.innerHTML = '<div class="s-name">' + s.name + '</div>' +
+                  '<div class="s-count">' + s.count + ' 张牌</div>' +
+                  '<div class="s-desc">' + s.desc + "</div>";
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".spread-btn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      spread = s;
+    });
+    box.appendChild(b);
   });
+})();
+
+/* 输入问题时实时识别主题 */
+$("question").addEventListener("input", () => {
+  const d = detectDomain($("question").value.trim());
+  $("domainHint").innerHTML = d && d !== "general"
+    ? "✦ 已识别为 <em>" + domainName(d) + "</em> 方面的问题,解读将围绕它展开"
+    : (d === "general" ? "✦ 将以 <em>整体运势</em> 的角度为你解读" : "");
 });
 
 $("startBtn").addEventListener("click", startDivination);
 $("againBtn").addEventListener("click", () => location.reload());
 
 function startDivination() {
+  qDomain = detectDomain($("question").value.trim());
   $("setup").style.display = "none";
   $("pickStage").classList.add("show");
   buildFan();
@@ -421,8 +528,8 @@ function startDivination() {
 function buildFan() {
   const fan = $("fan");
   fan.innerHTML = "";
-  const N = 14;
-  const spreadDeg = Math.min(80, innerWidth / 8);
+  const N = Math.max(16, spread.count + 8);
+  const spreadDeg = Math.min(90, innerWidth / 7);
   const cards = [];
   for (let i = 0; i < N; i++) {
     const c = document.createElement("div");
@@ -445,33 +552,35 @@ function buildFan() {
 }
 
 function updatePickHint() {
-  const left = spreadCount - picked.length;
+  const left = spread.count - picked.length;
   $("pickHint").innerHTML = left > 0
     ? "凭直觉抽取 <em>" + left + "</em> 张牌"
     : "命运已然落定……";
 }
 
 function pickCard(el) {
-  if (picked.length >= spreadCount) return;
+  if (picked.length >= spread.count) return;
   el.classList.add("picked");
   let card;
   do { card = DECK[Math.floor(Math.random() * DECK.length)]; }
   while (picked.some(p => p.card.id === card.id));
   picked.push({ card, reversed: Math.random() < 0.4 });
   updatePickHint();
-  if (picked.length === spreadCount) setTimeout(showResults, 700);
+  if (picked.length === spread.count) setTimeout(showResults, 700);
 }
 
 function showResults() {
   $("pickStage").classList.remove("show");
   const results = $("results");
   results.innerHTML = "";
-  const labels = SLOT_LABELS[spreadCount];
+  results.classList.toggle("dense", spread.count >= 8);
   picked.forEach((p, i) => {
+    const [label, sub] = spread.labels[i];
     const slot = document.createElement("div");
     slot.className = "slot";
     slot.innerHTML =
-      '<div class="slot-label">' + labels[i] + "</div>" +
+      '<div class="slot-label">' + label + "</div>" +
+      '<div class="slot-sub">' + sub + "</div>" +
       '<div class="flip" data-i="' + i + '">' +
         '<div class="flip-inner">' +
           '<div class="face back"><div class="card-back" style="font-size:40px">✦</div></div>' +
@@ -489,12 +598,12 @@ function showResults() {
       '<div class="orientation-box" style="min-height:34px"></div>';
     results.appendChild(slot);
     const flip = slot.querySelector(".flip");
-    flip.addEventListener("click", () => reveal(flip, slot, p, labels[i]), { once: true });
+    flip.addEventListener("click", () => reveal(flip, slot, p), { once: true });
   });
   $("resultStage").classList.add("show");
 }
 
-function reveal(flip, slot, p, label) {
+function reveal(flip, slot, p) {
   flip.classList.add("revealed");
   setTimeout(() => {
     slot.querySelector(".orientation-box").innerHTML =
@@ -502,48 +611,84 @@ function reveal(flip, slot, p, label) {
       (p.reversed ? "逆位" : "正位") + "</span>";
   }, 500);
   revealedCount++;
-  if (revealedCount === spreadCount) {
+  if (revealedCount === spread.count) {
     $("resultHint").textContent = "牌面已揭晓";
     setTimeout(showReading, 1100);
   } else {
-    $("resultHint").textContent = "还有 " + (spreadCount - revealedCount) + " 张牌等待揭示";
+    $("resultHint").textContent = "还有 " + (spread.count - revealedCount) + " 张牌等待揭示";
   }
 }
 
 function showReading() {
   const reading = $("reading");
-  const labels = SLOT_LABELS[spreadCount];
   const q = $("question").value.trim();
   let html = "";
   picked.forEach((p, i) => {
+    const [label, sub] = spread.labels[i];
     const keys = p.reversed ? p.card.revKeys : p.card.upKeys;
     const text = p.reversed ? p.card.revText : p.card.upText;
+    const dLine = domainLine(p, qDomain);
     html +=
       '<div class="reading-card">' +
-        "<h3>" + labels[i] + " · " + p.card.cn + "(" + (p.reversed ? "逆位" : "正位") + ")</h3>" +
+        "<h3>" + label + " · " + p.card.cn + "(" + (p.reversed ? "逆位" : "正位") + ")</h3>" +
+        '<div class="pos-meaning">此位置代表:' + sub + "</div>" +
         '<div class="keywords">关键词:' + keys + "</div>" +
         "<p>" + text + "</p>" +
+        (dLine ? '<p class="domain-line">' + dLine + "</p>" : "") +
       "</div>";
   });
-  html += '<div class="summary"><h3>✦ 整体讯息</h3><p>' + summarize(q) + "</p></div>";
+  html += '<div class="summary"><h3>✦ 问题解答</h3>' + answer(q) + "</div>";
   reading.innerHTML = html;
   reading.classList.add("show");
   $("againBox").style.display = "block";
   reading.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function summarize(q) {
+/* =========================================================
+   综合解答:结合问题主题、正逆位比例与结果位的牌
+   ========================================================= */
+function answer(q) {
   const revN = picked.filter(p => p.reversed).length;
-  const prefix = q ? "关于「" + q + "」——" : "";
+  const total = picked.length;
+  const outcome = picked[total - 1];
+  const outLabel = spread.labels[total - 1][0];
+  const oKeys = outcome.reversed ? outcome.card.revKeys : outcome.card.upKeys;
+  const oText = outcome.reversed ? outcome.card.revText : outcome.card.upText;
+
+  let html = "";
+  if (q) {
+    html += "<p>你问:「" + q + "」" +
+      (qDomain && qDomain !== "general"
+        ? "——这是一个关于<b>" + domainName(qDomain) + "</b>的问题,以下解答将围绕它展开。"
+        : "——牌阵将以整体的视角回应你。") + "</p>";
+  }
+
   let tone;
   if (revN === 0) {
-    tone = "牌面全部以正位呈现,能量顺畅而明朗。此刻的你与所问之事同频,大胆按照心中的方向前进,宇宙正在为你开路。";
-  } else if (revN < picked.length) {
-    tone = "牌面正逆交织,说明事情正处在转化之中:顺境与功课并存。留意逆位牌所指出的盲点,它不是阻碍,而是这次占卜最想送给你的提醒。";
+    tone = "牌面全部以正位呈现,能量顺畅而明朗:你与所问之事正处在同频的状态,阻力很小。";
+  } else if (revN / total <= 0.5) {
+    tone = "牌面正位居多、间有逆位:大方向是通畅的,但逆位牌指出的盲点正是这次占卜要送你的提醒。";
+  } else if (revN < total) {
+    tone = "牌面以逆位为主:能量暂时受阻,当下更适合调整与梳理,而非强行推进。";
   } else {
-    tone = "牌面以逆位为主,能量暂时受阻——但逆位从来不是坏牌,它只是把镜子转向内在。放慢脚步,先梳理内心,外界的路自然会清晰。";
+    tone = "牌面全部逆位——这不是凶兆,而是一面转向内在的镜子:先安顿好自己,外界的路自然会清晰。";
   }
-  return prefix + tone + " 请记得:塔罗展示的是当下能量的走向,而握着方向盘的,始终是你自己。";
+  html += "<p>" + tone + "</p>";
+
+  html += '<p class="answer-line">✧ 关键在「' + outLabel + "」位:" + outcome.card.cn +
+    "(" + (outcome.reversed ? "逆位" : "正位") + ")——" + oKeys + "。" + oText + "</p>";
+
+  let verdict;
+  if (!outcome.reversed && revN / total <= 0.5) {
+    verdict = "综合来看,答案偏向<b>肯定与顺利</b>:按你心中的方向坚定走下去,结果值得期待。";
+  } else if (outcome.reversed && revN / total > 0.5) {
+    verdict = "综合来看,当下<b>时机未熟</b>:与其硬闯,不如先处理逆位牌揭示的课题,时机成熟时再行动,结果会完全不同。";
+  } else {
+    verdict = "综合来看,事情<b>存在变数但可以争取</b>:结果不是注定的,牌面中逆位所指的功课,正是你能扭转走向的抓手。";
+  }
+  html += "<p>" + verdict + "</p>";
+  html += "<p style='color:var(--dim);font-size:13.5px'>塔罗展示的是当下能量的走向,而握着方向盘的,始终是你自己。</p>";
+  return html;
 }
 </script>
 </body>
