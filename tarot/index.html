@@ -250,6 +250,83 @@
     padding: 30px 20px 40px; letter-spacing: .1em; line-height: 1.8;
   }
 
+  /* ---------- 账户 ---------- */
+  .account-btn {
+    position: fixed; top: 18px; right: 18px; z-index: 5;
+    cursor: pointer; font-family: inherit; font-size: 13.5px;
+    color: var(--gold); letter-spacing: .1em;
+    background: rgba(11,11,26,.55);
+    border: 1px solid rgba(212,175,106,.45);
+    border-radius: 999px; padding: 8px 18px;
+    transition: all .3s; backdrop-filter: blur(4px);
+  }
+  .account-btn:hover { background: rgba(212,175,106,.14); box-shadow: 0 0 14px rgba(212,175,106,.25); }
+  .modal-mask {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(5,5,14,.72); backdrop-filter: blur(3px);
+    display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-mask.show { display: flex; animation: fadeIn .25s ease; }
+  .modal {
+    width: min(430px, 100%);
+    background: linear-gradient(165deg, #1c1838, #12102a);
+    border: 1px solid rgba(212,175,106,.45);
+    border-radius: 14px;
+    padding: 30px 30px 26px;
+    box-shadow: 0 12px 48px rgba(0,0,0,.6);
+  }
+  .modal h3 { color: var(--gold-bright); letter-spacing: .2em; font-size: 18px; margin-bottom: 6px; }
+  .modal .m-sub { color: var(--dim); font-size: 12.5px; line-height: 1.7; margin-bottom: 18px; }
+  .modal label { display: block; color: var(--gold); font-size: 13px; letter-spacing: .1em; margin: 14px 0 6px; }
+  .modal input, .modal select {
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(212,175,106,.3);
+    border-radius: 8px;
+    color: var(--ink);
+    font-family: inherit; font-size: 14px;
+    padding: 10px 12px; outline: none;
+  }
+  .modal input:focus, .modal select:focus { border-color: var(--gold); }
+  .modal select option { background: #1c1838; }
+  .modal .m-note { color: #7d7591; font-size: 11.5px; line-height: 1.6; margin-top: 10px; }
+  .modal .m-actions { display: flex; gap: 12px; margin-top: 22px; }
+  .modal .m-actions button {
+    flex: 1; cursor: pointer; font-family: inherit; font-size: 14px;
+    border-radius: 999px; padding: 10px 0; letter-spacing: .15em;
+    transition: all .25s;
+  }
+  .m-save { color: #1c1428; background: linear-gradient(135deg, var(--gold-bright), var(--gold)); border: none; }
+  .m-save:hover { box-shadow: 0 4px 18px rgba(212,175,106,.4); }
+  .m-cancel, .m-logout { color: var(--dim); background: none; border: 1px solid rgba(154,147,168,.35); }
+  .m-logout { color: #d89a9a; border-color: rgba(216,154,154,.4); }
+
+  /* ---------- AI 深度解读 ---------- */
+  .ai-section {
+    margin-top: 22px;
+    background: rgba(120,100,200,.06);
+    border: 1px solid rgba(160,140,220,.35);
+    border-radius: 10px;
+    padding: 22px 26px;
+  }
+  .ai-section h3 { color: #c9baf0; letter-spacing: .2em; font-size: 17px; margin-bottom: 10px; }
+  .ai-section .ai-desc { color: var(--dim); font-size: 13.5px; line-height: 1.8; margin-bottom: 14px; }
+  .ai-btn {
+    cursor: pointer; font-family: inherit; font-size: 14.5px;
+    color: #e8e0ff; letter-spacing: .15em;
+    background: linear-gradient(135deg, rgba(140,110,220,.55), rgba(90,70,170,.55));
+    border: 1px solid rgba(170,150,230,.5);
+    border-radius: 999px; padding: 11px 34px;
+    transition: all .3s;
+  }
+  .ai-btn:hover { box-shadow: 0 0 20px rgba(150,120,230,.35); transform: translateY(-1px); }
+  .ai-btn:disabled { opacity: .45; cursor: wait; transform: none; }
+  .ai-output {
+    color: var(--ink); font-size: 15px; line-height: 2;
+    white-space: pre-wrap; margin-top: 14px;
+  }
+  .ai-error { color: #d89a9a; font-size: 13.5px; line-height: 1.7; margin-top: 12px; }
+
   @media (max-width: 560px) {
     :root { --card-w: 74px; --card-h: 126px; }
     .flip, .slot { width: 138px; }
@@ -267,6 +344,32 @@
 </head>
 <body>
 <div id="stars"></div>
+
+<button class="account-btn" id="accountBtn">登录</button>
+
+<!-- 账户设置弹窗 -->
+<div class="modal-mask" id="accountModal">
+  <div class="modal">
+    <h3>✦ 我的账户</h3>
+    <p class="m-sub">设置你自己的 Claude API Key 后,占卜结束时可召唤 AI 结合你的问题与牌面生成深度解读。</p>
+    <label for="mName">昵称</label>
+    <input id="mName" type="text" maxlength="20" placeholder="如何称呼你?(可留空)">
+    <label for="mKey">Anthropic API Key</label>
+    <input id="mKey" type="password" placeholder="sk-ant-..." autocomplete="off">
+    <label for="mModel">解读模型</label>
+    <select id="mModel">
+      <option value="claude-opus-4-8" selected>Claude Opus 4.8(最佳解读质量,推荐)</option>
+      <option value="claude-sonnet-5">Claude Sonnet 5(均衡)</option>
+      <option value="claude-haiku-4-5">Claude Haiku 4.5(最快最省)</option>
+    </select>
+    <p class="m-note">🔒 Key 仅保存在你自己浏览器的 localStorage 中,调用时由浏览器直接发送给 api.anthropic.com,不会经过本站或任何第三方服务器。可在 platform.claude.com 创建 Key。</p>
+    <div class="m-actions">
+      <button class="m-cancel" id="mCancel">取消</button>
+      <button class="m-logout" id="mLogout" style="display:none">退出登录</button>
+      <button class="m-save" id="mSave">保存</button>
+    </div>
+  </div>
+</div>
 
 <main>
   <header>
@@ -638,8 +741,10 @@ function showReading() {
       "</div>";
   });
   html += '<div class="summary"><h3>✦ 问题解答</h3>' + answer(q) + "</div>";
+  html += renderAiSection();
   reading.innerHTML = html;
   reading.classList.add("show");
+  bindAiSection();
   $("againBox").style.display = "block";
   reading.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -689,6 +794,157 @@ function answer(q) {
   html += "<p>" + verdict + "</p>";
   html += "<p style='color:var(--dim);font-size:13.5px'>塔罗展示的是当下能量的走向,而握着方向盘的,始终是你自己。</p>";
   return html;
+}
+
+/* =========================================================
+   账户系统:昵称 + API Key + 模型,存于 localStorage
+   ========================================================= */
+const PROFILE_KEY = "tarot_profile";
+function loadProfile() {
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; }
+  catch (e) { return null; }
+}
+function saveProfile(p) { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); }
+function clearProfile() { localStorage.removeItem(PROFILE_KEY); }
+
+function refreshAccountBtn() {
+  const p = loadProfile();
+  $("accountBtn").textContent = p && p.key
+    ? "✦ " + (p.name || "已登录")
+    : "登录";
+}
+
+function openAccountModal() {
+  const p = loadProfile() || {};
+  $("mName").value = p.name || "";
+  $("mKey").value = p.key || "";
+  $("mModel").value = p.model || "claude-opus-4-8";
+  $("mLogout").style.display = p.key ? "" : "none";
+  $("accountModal").classList.add("show");
+}
+function closeAccountModal() { $("accountModal").classList.remove("show"); }
+
+$("accountBtn").addEventListener("click", openAccountModal);
+$("mCancel").addEventListener("click", closeAccountModal);
+$("accountModal").addEventListener("click", e => { if (e.target === $("accountModal")) closeAccountModal(); });
+$("mSave").addEventListener("click", () => {
+  const key = $("mKey").value.trim();
+  saveProfile({ name: $("mName").value.trim(), key, model: $("mModel").value });
+  refreshAccountBtn();
+  closeAccountModal();
+});
+$("mLogout").addEventListener("click", () => {
+  clearProfile();
+  refreshAccountBtn();
+  closeAccountModal();
+});
+refreshAccountBtn();
+
+/* =========================================================
+   AI 深度解读:用用户自己的 Key 从浏览器直连 Claude API
+   ========================================================= */
+function renderAiSection() {
+  const p = loadProfile();
+  const inner = p && p.key
+    ? '<p class="ai-desc">' + (p.name ? p.name + "," : "") +
+      '想听更深入的解读吗?AI 会结合你的问题、牌阵位置与每张牌的正逆位,为你生成一份专属解读。</p>' +
+      '<button class="ai-btn" id="aiBtn">✨ 召唤 AI 深度解读</button>' +
+      '<div class="ai-output" id="aiOutput"></div><div class="ai-error" id="aiError"></div>'
+    : '<p class="ai-desc">登录并设置你自己的 Claude API Key 后,可以让 AI 结合你的问题与牌面生成一份专属深度解读。</p>' +
+      '<button class="ai-btn" id="aiLoginBtn">前往登录设置</button>';
+  return '<div class="ai-section"><h3>🔮 AI 深度解读</h3>' + inner + "</div>";
+}
+
+function bindAiSection() {
+  const loginBtn = document.getElementById("aiLoginBtn");
+  if (loginBtn) loginBtn.addEventListener("click", openAccountModal);
+  const aiBtn = document.getElementById("aiBtn");
+  if (aiBtn) aiBtn.addEventListener("click", runAiReading);
+}
+
+function buildAiPrompt() {
+  const q = $("question").value.trim();
+  const lines = picked.map((p, i) => {
+    const [label, sub] = spread.labels[i];
+    return "- 「" + label + "」位(" + sub + "):" + p.card.cn + " / " + p.card.en +
+      "(" + (p.reversed ? "逆位" : "正位") + ")";
+  });
+  return "牌阵:" + spread.name + "(" + spread.count + " 张)\n" +
+    "来访者的问题:" + (q || "(未填写,请给整体指引)") + "\n" +
+    (qDomain && qDomain !== "general" ? "问题领域:" + domainName(qDomain) + "\n" : "") +
+    "抽到的牌:\n" + lines.join("\n");
+}
+
+const AI_SYSTEM = "你是一位温暖而有洞察力的资深塔罗牌解读师。请用中文为来访者解读牌面:" +
+  "先逐张结合牌位含义与正逆位解读,再点出牌与牌之间的呼应与故事线,最后针对来访者的问题给出明确的解答与可执行的建议。" +
+  "语言具体、贴近生活,不空泛;不使用 markdown 标记,用自然段落书写;全文控制在 600 字以内。" +
+  "结尾用一句话提醒:塔罗仅供参考,选择权始终在自己手中。";
+
+async function runAiReading() {
+  const p = loadProfile();
+  if (!p || !p.key) { openAccountModal(); return; }
+  const btn = document.getElementById("aiBtn");
+  const out = document.getElementById("aiOutput");
+  const err = document.getElementById("aiError");
+  btn.disabled = true;
+  btn.textContent = "星辰连接中…";
+  out.textContent = "";
+  err.textContent = "";
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": p.key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: p.model || "claude-opus-4-8",
+        max_tokens: 4000,
+        stream: true,
+        system: AI_SYSTEM,
+        messages: [{ role: "user", content: buildAiPrompt() }]
+      })
+    });
+    if (!res.ok) {
+      let msg = "请求失败(HTTP " + res.status + ")";
+      try {
+        const e = await res.json();
+        if (res.status === 401) msg = "API Key 无效或已过期,请点击右上角账户重新设置。";
+        else if (res.status === 429) msg = "请求过于频繁,请稍后再试。";
+        else if (e && e.error && e.error.message) msg = e.error.message;
+      } catch (_) {}
+      throw new Error(msg);
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const parts = buf.split("\n");
+      buf = parts.pop();
+      for (const line of parts) {
+        if (!line.startsWith("data: ")) continue;
+        let ev;
+        try { ev = JSON.parse(line.slice(6)); } catch (_) { continue; }
+        if (ev.type === "content_block_delta" && ev.delta && ev.delta.type === "text_delta") {
+          out.textContent += ev.delta.text;
+        } else if (ev.type === "message_delta" && ev.delta && ev.delta.stop_reason === "refusal") {
+          err.textContent = "AI 无法解读这个问题,请换个方式提问。";
+        }
+      }
+    }
+    btn.textContent = "✨ 再次解读";
+  } catch (e) {
+    err.textContent = "✧ " + (e.message || "网络异常,请检查网络后重试。") +
+      (String(e.message).includes("Failed to fetch") ? "(可能是网络无法连接 api.anthropic.com)" : "");
+    btn.textContent = "✨ 召唤 AI 深度解读";
+  } finally {
+    btn.disabled = false;
+  }
 }
 </script>
 </body>
