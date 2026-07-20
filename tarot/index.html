@@ -891,7 +891,7 @@ async function runAiReading() {
   out.textContent = "";
   err.textContent = "";
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const reqInit = {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -906,7 +906,16 @@ async function runAiReading() {
         system: AI_SYSTEM,
         messages: [{ role: "user", content: buildAiPrompt() }]
       })
-    });
+    };
+    // 优先直连官方 API;网络不通时回退到同源 Cloudflare Worker 代理 /api/claude
+    const endpoints = ["https://api.anthropic.com/v1/messages"];
+    if (location.protocol.startsWith("http")) endpoints.push(location.origin + "/api/claude");
+    let res, lastErr;
+    for (const ep of endpoints) {
+      try { res = await fetch(ep, reqInit); lastErr = null; break; }
+      catch (e) { lastErr = e; }
+    }
+    if (!res) throw lastErr || new Error("网络异常");
     if (!res.ok) {
       let msg = "请求失败(HTTP " + res.status + ")";
       try {
