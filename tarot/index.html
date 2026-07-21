@@ -300,6 +300,31 @@
   .m-save:hover { box-shadow: 0 4px 18px rgba(212,175,106,.4); }
   .m-cancel, .m-logout { color: var(--dim); background: none; border: 1px solid rgba(154,147,168,.35); }
   .m-logout { color: #d89a9a; border-color: rgba(216,154,154,.4); }
+  .modal { max-height: 88vh; overflow-y: auto; }
+  .tabs { display: flex; gap: 8px; margin: 6px 0 4px; }
+  .tab { flex: 1; cursor: pointer; font-family: inherit; font-size: 14px; color: var(--dim);
+    background: none; border: none; border-bottom: 2px solid transparent; padding: 8px 0; letter-spacing: .1em; }
+  .tab.active { color: var(--gold-bright); border-bottom-color: var(--gold); }
+  .m-save.full, .m-logout.full { width: 100%; flex: none; margin-top: 14px; }
+  .auth-or { text-align: center; margin: 16px 0 4px; }
+  .auth-or .or-line { color: var(--dim); font-size: 12px; letter-spacing: .3em; }
+  #googleBtnHost { display: flex; justify-content: center; margin-top: 12px; min-height: 4px; }
+  .api-block { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(212,175,106,.22); }
+  .api-block h4 { color: var(--gold); font-size: 14px; letter-spacing: .12em; margin-bottom: 4px; }
+  .link-btn.small { font-size: 13px; padding: 8px 20px; display: inline-block; margin: 6px 0; text-indent: 0; letter-spacing: .1em; }
+  .hist-empty { color: var(--dim); font-size: 13.5px; text-align: center; padding: 20px 0; }
+  .history-list { max-height: 60vh; overflow-y: auto; margin: 8px 0; }
+  .hist-item { background: rgba(255,255,255,.035); border: 1px solid rgba(212,175,106,.2);
+    border-radius: 9px; padding: 14px 16px; margin-bottom: 12px; }
+  .hist-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .hist-q { color: var(--gold-bright); font-size: 15px; line-height: 1.5; }
+  .hist-del { cursor: pointer; background: none; border: none; color: #7d7591; font-size: 15px; flex: none; }
+  .hist-del:hover { color: #d89a9a; }
+  .hist-meta { color: var(--dim); font-size: 12px; margin: 6px 0; letter-spacing: .04em; }
+  .hist-cards { color: var(--gold); font-size: 13px; line-height: 1.7; }
+  .hist-ai { color: var(--ink); font-size: 13.5px; line-height: 1.9; margin-top: 8px;
+    padding-top: 8px; border-top: 1px dashed rgba(212,175,106,.2); white-space: pre-wrap; }
+  .ai-saved { color: #a8d8a8; font-size: 12.5px; margin-top: 10px; letter-spacing: .05em; }
 
   /* ---------- AI 深度解读 ---------- */
   .ai-section {
@@ -345,28 +370,79 @@
 <body>
 <div id="stars"></div>
 
-<button class="account-btn" id="accountBtn">登录</button>
+<button class="account-btn" id="accountBtn">登录 / 注册</button>
 
-<!-- 账户设置弹窗 -->
+<!-- 账户与设置弹窗 -->
 <div class="modal-mask" id="accountModal">
   <div class="modal">
-    <h3>✦ 我的账户</h3>
-    <p class="m-sub">设置你自己的 Claude API Key 后,占卜结束时可召唤 AI 结合你的问题与牌面生成深度解读。</p>
-    <label for="mName">昵称</label>
-    <input id="mName" type="text" maxlength="20" placeholder="如何称呼你?(可留空)">
-    <label for="mKey">Anthropic API Key</label>
-    <input id="mKey" type="password" placeholder="sk-ant-..." autocomplete="off">
-    <label for="mModel">解读模型</label>
-    <select id="mModel">
-      <option value="claude-opus-4-8" selected>Claude Opus 4.8(最佳解读质量,推荐)</option>
-      <option value="claude-sonnet-5">Claude Sonnet 5(均衡)</option>
-      <option value="claude-haiku-4-5">Claude Haiku 4.5(最快最省)</option>
-    </select>
-    <p class="m-note">🔒 Key 仅保存在你自己浏览器的 localStorage 中,调用时由浏览器直接发送给 api.anthropic.com,不会经过本站或任何第三方服务器。可在 platform.claude.com 创建 Key。</p>
+    <!-- 未登录:登录 / 注册 / Google -->
+    <div id="authView">
+      <h3>✦ 账户</h3>
+      <div class="tabs" id="authTabs">
+        <button class="tab active" data-tab="login">登录</button>
+        <button class="tab" data-tab="register">注册</button>
+      </div>
+      <div class="tab-body" data-body="login">
+        <label for="loginEmail">邮箱</label>
+        <input id="loginEmail" type="email" autocomplete="username" placeholder="you@example.com">
+        <label for="loginPass">密码</label>
+        <input id="loginPass" type="password" autocomplete="current-password" placeholder="密码">
+        <button class="m-save full" id="loginBtn">登录</button>
+      </div>
+      <div class="tab-body" data-body="register" style="display:none">
+        <label for="regName">昵称</label>
+        <input id="regName" type="text" maxlength="20" placeholder="如何称呼你?(可留空)">
+        <label for="regEmail">邮箱</label>
+        <input id="regEmail" type="email" autocomplete="username" placeholder="you@example.com">
+        <label for="regPass">密码(至少 6 位)</label>
+        <input id="regPass" type="password" autocomplete="new-password" placeholder="设置密码">
+        <button class="m-save full" id="registerBtn">注册</button>
+      </div>
+      <div class="auth-or" id="googleWrap" style="display:none">
+        <div class="or-line">— 或 —</div>
+        <div id="googleBtnHost"></div>
+      </div>
+      <div class="ai-error" id="authError"></div>
+      <p class="m-note" id="accountNote"></p>
+    </div>
+
+    <!-- 已登录 -->
+    <div id="userView" style="display:none">
+      <h3>✦ 我的账户</h3>
+      <p class="m-sub" id="userInfo"></p>
+      <button class="link-btn small" id="historyBtn">📜 查看历史记录</button>
+      <button class="m-logout full" id="logoutBtn">退出登录</button>
+    </div>
+
+    <!-- API 设置(本地保存,登录与否都可用) -->
+    <div class="api-block">
+      <h4>AI 解读设置</h4>
+      <label for="apiProvider">AI 供应商</label>
+      <select id="apiProvider">
+        <option value="anthropic">Anthropic(Claude)</option>
+        <option value="deepseek">DeepSeek(深度求索)</option>
+      </select>
+      <label for="apiKey">API Key</label>
+      <input id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-...">
+      <label for="apiModel">模型</label>
+      <select id="apiModel"></select>
+      <p class="m-note" id="apiNote"></p>
+    </div>
+
     <div class="m-actions">
-      <button class="m-cancel" id="mCancel">取消</button>
-      <button class="m-logout" id="mLogout" style="display:none">退出登录</button>
-      <button class="m-save" id="mSave">保存</button>
+      <button class="m-cancel" id="mCancel">关闭</button>
+      <button class="m-save" id="apiSave">保存设置</button>
+    </div>
+  </div>
+</div>
+
+<!-- 历史记录弹窗 -->
+<div class="modal-mask" id="historyModal">
+  <div class="modal">
+    <h3>📜 历史记录</h3>
+    <div class="history-list" id="historyList"></div>
+    <div class="m-actions">
+      <button class="m-cancel" id="histClose">关闭</button>
     </div>
   </div>
 </div>
@@ -745,6 +821,7 @@ function showReading() {
   reading.innerHTML = html;
   reading.classList.add("show");
   bindAiSection();
+  saveReadingToHistory();
   $("againBox").style.display = "block";
   reading.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -797,61 +874,243 @@ function answer(q) {
 }
 
 /* =========================================================
-   账户系统:昵称 + API Key + 模型,存于 localStorage
+   账户系统:云端注册/登录/Google + 本地 API 设置 + 云端历史
    ========================================================= */
-const PROFILE_KEY = "tarot_profile";
-function loadProfile() {
-  try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; }
-  catch (e) { return null; }
+const API_BASE = "https://tarot-divination.chenxia.workers.dev";
+const API_KEY_STORE = "tarot_api";      // { provider, key, model } 仅存本地
+const SESSION_STORE = "tarot_session";  // { token, user }
+const MODELS = {
+  anthropic: [["claude-opus-4-8", "Claude Opus 4.8(最佳,推荐)"], ["claude-sonnet-5", "Claude Sonnet 5(均衡)"], ["claude-haiku-4-5", "Claude Haiku 4.5(最快最省)"]],
+  deepseek:  [["deepseek-chat", "DeepSeek Chat(通用,推荐)"], ["deepseek-reasoner", "DeepSeek Reasoner(深度推理)"]]
+};
+let backendConfig = { accounts: false, googleClientId: null };
+let currentReadingId = null;
+
+function loadApi()  { try { return JSON.parse(localStorage.getItem(API_KEY_STORE)) || {}; } catch (e) { return {}; } }
+function saveApi(a) { localStorage.setItem(API_KEY_STORE, JSON.stringify(a)); }
+function loadSession()  { try { return JSON.parse(localStorage.getItem(SESSION_STORE)) || null; } catch (e) { return null; } }
+function saveSession(s) { localStorage.setItem(SESSION_STORE, JSON.stringify(s)); }
+function clearSession() { localStorage.removeItem(SESSION_STORE); }
+
+async function apiCall(path, opts) {
+  opts = opts || {};
+  const headers = Object.assign({ "content-type": "application/json" }, opts.headers || {});
+  const sess = loadSession();
+  if (sess && sess.token) headers["authorization"] = "Bearer " + sess.token;
+  return fetch(API_BASE + path, {
+    method: opts.method || "GET", headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
 }
-function saveProfile(p) { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); }
-function clearProfile() { localStorage.removeItem(PROFILE_KEY); }
+function escapeHtml(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
 function refreshAccountBtn() {
-  const p = loadProfile();
-  $("accountBtn").textContent = p && p.key
-    ? "✦ " + (p.name || "已登录")
-    : "登录";
+  const s = loadSession();
+  $("accountBtn").textContent = (s && s.user)
+    ? "✦ " + (s.user.name || (s.user.email || "").split("@")[0] || "已登录")
+    : "登录 / 注册";
 }
 
-function openAccountModal() {
-  const p = loadProfile() || {};
-  $("mName").value = p.name || "";
-  $("mKey").value = p.key || "";
-  $("mModel").value = p.model || "claude-opus-4-8";
-  $("mLogout").style.display = p.key ? "" : "none";
-  $("accountModal").classList.add("show");
+function fillModel(select, provider, chosen) {
+  select.innerHTML = "";
+  (MODELS[provider] || MODELS.anthropic).forEach(([v, label], i) => {
+    const o = document.createElement("option");
+    o.value = v; o.textContent = label;
+    if (v === chosen || (!chosen && i === 0)) o.selected = true;
+    select.appendChild(o);
+  });
 }
+function apiNoteText(provider) {
+  return "🔒 Key 仅存于本浏览器,调用时经我们的 Cloudflare 边缘节点转发给 " +
+    (provider === "deepseek" ? "DeepSeek" : "Anthropic") + ",不落库、不外泄。";
+}
+
+function renderAccountModal() {
+  const s = loadSession();
+  const api = loadApi();
+  const provider = api.provider || "anthropic";
+  $("apiProvider").value = provider;
+  fillModel($("apiModel"), provider, api.model);
+  $("apiKey").value = api.key || "";
+  $("apiKey").placeholder = provider === "deepseek" ? "sk-... (DeepSeek)" : "sk-ant-...";
+  $("apiNote").textContent = apiNoteText(provider);
+
+  if (s && s.user) {
+    $("authView").style.display = "none";
+    $("userView").style.display = "";
+    $("userInfo").textContent = "已登录:" + (s.user.email || s.user.name);
+  } else {
+    $("authView").style.display = "";
+    $("userView").style.display = "none";
+    $("authError").textContent = "";
+    if (backendConfig.accounts) {
+      $("authTabs").style.display = "";
+      $("accountNote").textContent = "注册 / 登录后,占卜历史会云端保存并跨设备同步。";
+      $("googleWrap").style.display = backendConfig.googleClientId ? "" : "none";
+      if (backendConfig.googleClientId) initGoogle();
+    } else {
+      $("authTabs").style.display = "none";
+      document.querySelectorAll("#authView .tab-body").forEach(el => el.style.display = "none");
+      $("googleWrap").style.display = "none";
+      $("accountNote").textContent = "云端账户与历史记录功能正在配置中。当前可直接在下方设置 API,即可使用 AI 深度解读。";
+    }
+  }
+}
+
+function openAccountModal() { renderAccountModal(); $("accountModal").classList.add("show"); }
 function closeAccountModal() { $("accountModal").classList.remove("show"); }
+function openHistoryModal() { $("historyModal").classList.add("show"); loadHistory(); }
+function closeHistoryModal() { $("historyModal").classList.remove("show"); }
 
 $("accountBtn").addEventListener("click", openAccountModal);
 $("mCancel").addEventListener("click", closeAccountModal);
 $("accountModal").addEventListener("click", e => { if (e.target === $("accountModal")) closeAccountModal(); });
-$("mSave").addEventListener("click", () => {
-  const key = $("mKey").value.trim();
-  saveProfile({ name: $("mName").value.trim(), key, model: $("mModel").value });
-  refreshAccountBtn();
-  closeAccountModal();
+$("histClose").addEventListener("click", closeHistoryModal);
+$("historyBtn").addEventListener("click", () => { closeAccountModal(); openHistoryModal(); });
+$("historyModal").addEventListener("click", e => { if (e.target === $("historyModal")) closeHistoryModal(); });
+
+$("apiProvider").addEventListener("change", () => {
+  const p = $("apiProvider").value;
+  fillModel($("apiModel"), p, null);
+  $("apiKey").placeholder = p === "deepseek" ? "sk-... (DeepSeek)" : "sk-ant-...";
+  $("apiNote").textContent = apiNoteText(p);
 });
-$("mLogout").addEventListener("click", () => {
-  clearProfile();
-  refreshAccountBtn();
-  closeAccountModal();
+$("apiSave").addEventListener("click", () => {
+  saveApi({ provider: $("apiProvider").value, key: $("apiKey").value.trim(), model: $("apiModel").value });
+  $("apiSave").textContent = "已保存 ✓";
+  setTimeout(() => { $("apiSave").textContent = "保存设置"; }, 1200);
 });
+
+/* ---------- 登录 / 注册 / Google ---------- */
+document.querySelectorAll("#authTabs .tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll("#authTabs .tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    document.querySelectorAll("#authView .tab-body").forEach(b => {
+      b.style.display = b.dataset.body === tab.dataset.tab ? "" : "none";
+    });
+    $("authError").textContent = "";
+  });
+});
+
+async function doAuth(path, body) {
+  $("authError").textContent = "";
+  try {
+    const res = await apiCall(path, { method: "POST", body });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) { $("authError").textContent = (j.error && j.error.message) || "操作失败,请重试。"; return; }
+    saveSession({ token: j.token, user: j.user });
+    refreshAccountBtn();
+    renderAccountModal();
+  } catch (e) {
+    $("authError").textContent = "无法连接服务器,请稍后再试。";
+  }
+}
+$("loginBtn").addEventListener("click", () => doAuth("/api/login", { email: $("loginEmail").value.trim(), password: $("loginPass").value }));
+$("registerBtn").addEventListener("click", () => doAuth("/api/register", { name: $("regName").value.trim(), email: $("regEmail").value.trim(), password: $("regPass").value }));
+$("logoutBtn").addEventListener("click", async () => {
+  try { await apiCall("/api/logout", { method: "POST" }); } catch (_) {}
+  clearSession(); refreshAccountBtn(); renderAccountModal();
+});
+
+let googleInited = false;
+function initGoogle() {
+  if (googleInited) return;
+  googleInited = true;
+  const sc = document.createElement("script");
+  sc.src = "https://accounts.google.com/gsi/client";
+  sc.async = true; sc.defer = true;
+  sc.onload = () => {
+    try {
+      google.accounts.id.initialize({
+        client_id: backendConfig.googleClientId,
+        callback: (resp) => doAuth("/api/google", { credential: resp.credential })
+      });
+      google.accounts.id.renderButton($("googleBtnHost"), { theme: "filled_black", size: "large", width: 300, text: "signin_with" });
+    } catch (e) { $("googleWrap").style.display = "none"; }
+  };
+  sc.onerror = () => { $("googleWrap").style.display = "none"; googleInited = false; };
+  document.head.appendChild(sc);
+}
+
+/* ---------- 历史记录 ---------- */
+async function loadHistory() {
+  const list = $("historyList");
+  list.innerHTML = '<p class="hist-empty">加载中…</p>';
+  try {
+    const res = await apiCall("/api/history");
+    if (!res.ok) { list.innerHTML = '<p class="hist-empty">请先登录后查看历史。</p>'; return; }
+    const j = await res.json();
+    if (!j.readings || !j.readings.length) { list.innerHTML = '<p class="hist-empty">还没有历史记录,先占一卦吧。</p>'; return; }
+    list.innerHTML = "";
+    j.readings.forEach(r => list.appendChild(renderHistoryItem(r)));
+  } catch (e) {
+    list.innerHTML = '<p class="hist-empty">加载失败,请稍后再试。</p>';
+  }
+}
+function renderHistoryItem(r) {
+  const div = document.createElement("div");
+  div.className = "hist-item";
+  let cards = [];
+  try { cards = JSON.parse(r.cards || "[]"); } catch (_) {}
+  const date = new Date(r.created_at).toLocaleString("zh-CN", { hour12: false });
+  const cardStr = cards.map(c => (c.label ? c.label + ":" : "") + c.cn + (c.reversed ? "(逆)" : "")).join("  ");
+  div.innerHTML =
+    '<div class="hist-head"><span class="hist-q">' + (escapeHtml(r.question) || "(未填写问题)") + "</span>" +
+    '<button class="hist-del" title="删除">✕</button></div>' +
+    '<div class="hist-meta">' + escapeHtml(date) + " · " + escapeHtml(r.spread) + "</div>" +
+    '<div class="hist-cards">' + escapeHtml(cardStr) + "</div>" +
+    (r.ai_text ? '<div class="hist-ai">' + escapeHtml(r.ai_text) + "</div>" : "");
+  div.querySelector(".hist-del").addEventListener("click", async () => {
+    if (!confirm("删除这条记录?")) return;
+    try { await apiCall("/api/history?id=" + encodeURIComponent(r.id), { method: "DELETE" }); } catch (_) {}
+    loadHistory();
+  });
+  return div;
+}
+
+async function saveReadingToHistory() {
+  currentReadingId = null;
+  const s = loadSession();
+  if (!s || !s.user || !backendConfig.accounts) return;
+  const cards = picked.map((p, i) => ({ label: spread.labels[i][0], cn: p.card.cn, en: p.card.en, reversed: p.reversed }));
+  try {
+    const res = await apiCall("/api/history", { method: "POST", body: { question: $("question").value.trim(), spread: spread.name, cards, summary: "" } });
+    if (res.ok) { const j = await res.json(); currentReadingId = j.id; }
+  } catch (_) {}
+}
+
+/* ---------- 启动:探测后端能力 + 校验会话 ---------- */
 refreshAccountBtn();
+(async function initAccount() {
+  try {
+    const res = await fetch(API_BASE + "/api/config");
+    backendConfig = await res.json();
+  } catch (_) { backendConfig = { accounts: false, googleClientId: null }; }
+  const s = loadSession();
+  if (s && s.token && backendConfig.accounts) {
+    try {
+      const me = await apiCall("/api/me");
+      if (me.ok) { const j = await me.json(); saveSession({ token: s.token, user: j.user }); }
+      else clearSession();
+    } catch (_) {}
+    refreshAccountBtn();
+  }
+})();
 
 /* =========================================================
    AI 深度解读:用用户自己的 Key 从浏览器直连 Claude API
    ========================================================= */
 function renderAiSection() {
-  const p = loadProfile();
-  const inner = p && p.key
-    ? '<p class="ai-desc">' + (p.name ? p.name + "," : "") +
-      '想听更深入的解读吗?AI 会结合你的问题、牌阵位置与每张牌的正逆位,为你生成一份专属解读。</p>' +
+  const api = loadApi();
+  const inner = api.key
+    ? '<p class="ai-desc">想听更深入的解读吗?AI(' + (api.provider === "deepseek" ? "DeepSeek" : "Claude") +
+      ')会结合你的问题、牌阵位置与每张牌的正逆位,为你生成一份专属解读。</p>' +
       '<button class="ai-btn" id="aiBtn">✨ 召唤 AI 深度解读</button>' +
-      '<div class="ai-output" id="aiOutput"></div><div class="ai-error" id="aiError"></div>'
-    : '<p class="ai-desc">登录并设置你自己的 Claude API Key 后,可以让 AI 结合你的问题与牌面生成一份专属深度解读。</p>' +
-      '<button class="ai-btn" id="aiLoginBtn">前往登录设置</button>';
+      '<div class="ai-output" id="aiOutput"></div><div class="ai-error" id="aiError"></div>' +
+      '<div class="ai-saved" id="aiSaved"></div>'
+    : '<p class="ai-desc">在右上角账户里填入你自己的 Claude 或 DeepSeek API Key,即可让 AI 结合你的问题与牌面生成一份专属深度解读。</p>' +
+      '<button class="ai-btn" id="aiLoginBtn">前往设置 API</button>';
   return '<div class="ai-section"><h3>🔮 AI 深度解读</h3>' + inner + "</div>";
 }
 
@@ -881,49 +1140,33 @@ const AI_SYSTEM = "你是一位温暖而有洞察力的资深塔罗牌解读师�
   "结尾用一句话提醒:塔罗仅供参考,选择权始终在自己手中。";
 
 async function runAiReading() {
-  const p = loadProfile();
-  if (!p || !p.key) { openAccountModal(); return; }
+  const api = loadApi();
+  if (!api.key) { openAccountModal(); return; }
   const btn = document.getElementById("aiBtn");
   const out = document.getElementById("aiOutput");
   const err = document.getElementById("aiError");
+  const saved = document.getElementById("aiSaved");
   btn.disabled = true;
   btn.textContent = "星辰连接中…";
   out.textContent = "";
   err.textContent = "";
+  if (saved) saved.textContent = "";
+  let fullText = "";
   try {
-    const reqInit = {
+    const res = await fetch(API_BASE + "/api/llm", {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": p.key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        model: p.model || "claude-opus-4-8",
-        max_tokens: 4000,
-        stream: true,
+        provider: api.provider || "anthropic",
+        apiKey: api.key,
+        model: api.model,
         system: AI_SYSTEM,
-        messages: [{ role: "user", content: buildAiPrompt() }]
+        userContent: buildAiPrompt()
       })
-    };
-    // 优先直连官方 API;网络不通时回退到同源 Cloudflare Worker 代理 /api/claude
-    const endpoints = ["https://api.anthropic.com/v1/messages"];
-    if (location.protocol.startsWith("http")) endpoints.push(location.origin + "/api/claude");
-    let res, lastErr;
-    for (const ep of endpoints) {
-      try { res = await fetch(ep, reqInit); lastErr = null; break; }
-      catch (e) { lastErr = e; }
-    }
-    if (!res) throw lastErr || new Error("网络异常");
+    });
     if (!res.ok) {
       let msg = "请求失败(HTTP " + res.status + ")";
-      try {
-        const e = await res.json();
-        if (res.status === 401) msg = "API Key 无效或已过期,请点击右上角账户重新设置。";
-        else if (res.status === 429) msg = "请求过于频繁,请稍后再试。";
-        else if (e && e.error && e.error.message) msg = e.error.message;
-      } catch (_) {}
+      try { const e = await res.json(); if (e.error && e.error.message) msg = e.error.message; } catch (_) {}
       throw new Error(msg);
     }
     const reader = res.body.getReader();
@@ -936,20 +1179,24 @@ async function runAiReading() {
       const parts = buf.split("\n");
       buf = parts.pop();
       for (const line of parts) {
-        if (!line.startsWith("data: ")) continue;
+        const t = line.trim();
+        if (!t.startsWith("data:")) continue;
+        const data = t.slice(5).trim();
+        if (!data || data === "[DONE]") continue;
         let ev;
-        try { ev = JSON.parse(line.slice(6)); } catch (_) { continue; }
-        if (ev.type === "content_block_delta" && ev.delta && ev.delta.type === "text_delta") {
-          out.textContent += ev.delta.text;
-        } else if (ev.type === "message_delta" && ev.delta && ev.delta.stop_reason === "refusal") {
-          err.textContent = "AI 无法解读这个问题,请换个方式提问。";
-        }
+        try { ev = JSON.parse(data); } catch (_) { continue; }
+        if (ev.text) { out.textContent += ev.text; fullText += ev.text; }
       }
     }
     btn.textContent = "✨ 再次解读";
+    if (fullText && currentReadingId) {
+      try {
+        await apiCall("/api/history", { method: "POST", body: { id: currentReadingId, ai_text: fullText, summary: "" } });
+        if (saved) saved.textContent = "✓ 已保存到历史记录";
+      } catch (_) {}
+    }
   } catch (e) {
-    err.textContent = "✧ " + (e.message || "网络异常,请检查网络后重试。") +
-      (String(e.message).includes("Failed to fetch") ? "(可能是网络无法连接 api.anthropic.com)" : "");
+    err.textContent = "✧ " + (e.message || "网络异常,请稍后重试。");
     btn.textContent = "✨ 召唤 AI 深度解读";
   } finally {
     btn.disabled = false;
