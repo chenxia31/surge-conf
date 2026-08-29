@@ -1,0 +1,34 @@
+#!name=FlowerCloud Supplement
+#!desc=机场托管配置补充分流。规则指向 Flower Cloud 已有策略组，只补机场未覆盖的部分（去广告 / AI 服务 / 个人规则），不重复机场自带的 Google、YouTube、Netflix、Telegram、Apple、China 等规则。
+#!author=chenxia31
+#!repo=https://github.com/chenxia31/surge-conf
+#!category=chenxia31
+
+# 依赖的策略组（必须在机场托管配置中存在，否则模块加载失败）：
+#   Proxies, OpenAI
+# 若机场组名不同，只需修改下方各行末尾的组名。
+
+[Rule]
+# --- 个人规则（优先级最高）---
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/custom.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/iPhone240608-Local-DIRECT.list,DIRECT
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/iPhone240608-Local-PROXY.list,Proxies
+
+# --- 去广告（机场配置通常不带）---
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/reject.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Advertising.list,REJECT
+
+# --- AI 服务（机场多数只覆盖 OpenAI，Claude / Gemini 需补充）---
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/OpenAI.list,OpenAI
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Claude.list,OpenAI
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Gemini.list,OpenAI
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/BardAI.list,OpenAI
+
+# --- 以下规则机场托管配置一般已覆盖，重复引入只会增加加载时间，按需取消注释 ---
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Google.list,Google
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/YouTube.list,YouTube
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Telegram.list,Telegram
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Netflix.list,Netflix
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Apple.list,DIRECT
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/WeChat.list,DIRECT
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/China.list,DIRECT

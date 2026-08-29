@@ -51,6 +51,7 @@
 | Upgrade | `modules/Upgrade.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Upgrade.sgmodule` |
 | BlockHTTPDNS | `modules/BlockHTTPDNS.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/BlockHTTPDNS.sgmodule` |
 | Custom Rules（个人规则覆写） | `modules/Custom.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Custom.sgmodule` |
+| FlowerCloud Supplement（机场补充分流） | `modules/FlowerCloud.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/FlowerCloud.sgmodule` |
 
 ## 机场模板策略组基线
 
@@ -77,13 +78,30 @@ HK = select, policy-path=<机场订阅链接>, policy-regex-filter=香港|HK|Hon
 
 ### 方式二：机场托管配置 + 本仓库模块覆写（推荐）
 
-若主配置使用机场下发的托管配置（首行含 `#!MANAGED-CONFIG ... strict=true`），Surge 会禁止本地编辑，手改规则也会被订阅更新覆盖。此时不要改机场配置，改为安装本仓库的覆写模块：
+若主配置使用机场下发的托管配置（首行含 `#!MANAGED-CONFIG ... strict=true`），Surge 会禁止本地编辑，手改规则也会被订阅更新覆盖。此时不要改机场配置，改为安装本仓库的覆写模块。
 
-`https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Custom.sgmodule`
+模块的 `[Rule]` 会被插入到主配置规则**之前**，优先级高于机场自带规则，且不受机场订阅更新影响。机场只负责节点，规则完全由本仓库管理。
 
-Surge → 模块 → 从 URL 安装。模块的 `[Rule]` 会插入到主配置规则**之前**，优先级更高，且不受机场订阅更新影响。之后所有个人规则只维护 `rules/custom.list` 与 `rules/reject.list` 并推送到 `main` 即可。
+提供两个模块，按机场配置是否已有策略组选择：
 
-模块内引用策略组时，必须确保机场配置中存在同名策略组；Surge 无内置 `PROXY` 策略，只有 `DIRECT` / `REJECT` 恒定可用。
+| 模块 | 适用场景 | 依赖 |
+|---|---|---|
+| `Custom.sgmodule` | 只想加直连 / 拦截规则；或不确定机场组名 | 无（仅用 `DIRECT` / `REJECT`） |
+| `FlowerCloud.sgmodule` | 机场已有 `Proxies` / `OpenAI` 等策略组，需要按组分流 | 机场存在 `Proxies`、`OpenAI` |
+
+#### 步骤
+
+1. **确认策略组名**（仅 `FlowerCloud.sgmodule` 需要）。在 Surge 首页「策略」页查看机场配置实际的组名，确保存在 `Proxies` 与 `OpenAI`。组名不一致时，修改 `modules/FlowerCloud.sgmodule` 中对应 `RULE-SET` 行末尾的组名即可，规则文件本身不用动。
+2. **安装模块**：Surge → 模块 → 从 URL 安装，填入对应 Raw 链接：
+   - `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Custom.sgmodule`
+   - `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/FlowerCloud.sgmodule`
+3. **日常加规则**：修改 `rules/custom.list`（直连）或 `rules/reject.list`（拦截），推送到 `main`，在 Surge 模块页下拉刷新即可生效。
+
+#### 注意事项
+
+- Surge 无内置 `PROXY` 策略，只有 `DIRECT` / `REJECT` 恒定可用。模块引用了不存在的策略组会导致**整个模块加载失败**并报错。
+- `FlowerCloud.sgmodule` 只补机场未覆盖的部分（去广告、Claude / Gemini 等 AI 服务、个人规则）。Google、YouTube、Netflix、Telegram、Apple、China 等机场自带的规则已在模块中注释，重复引入只会增加加载时间，按需开启。
+- 若某个策略组在机场配置中确实不存在，可在模块中用 `[Proxy Group]` 段自建一个指向机场已有组的别名组，避免改动规则引用。
 
 ## 规则新增示例
 

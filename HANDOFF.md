@@ -109,8 +109,12 @@ Claude 在维护机场订阅时，策略组命名与分流应优先对齐以下�
 若用户主配置为机场下发的托管配置（首行含 `#!MANAGED-CONFIG`，通常 `strict=true`），Surge 禁止本地编辑，手改会被订阅更新覆盖。**不要尝试改机场配置**，按以下方式处理：
 
 1. 个人规则统一写入 `rules/custom.list`（直连）与 `rules/reject.list`（拦截），格式为不带策略的 RULE-SET 行。
-2. 通过 `modules/Custom.sgmodule` 覆写：模块的 `[Rule]` 会插入到主配置规则之前，优先级高于机场自带规则，且不受订阅更新影响。
-3. 模块中引用策略组时必须确认机场配置存在同名组；Surge 无内置 `PROXY` 策略，仅 `DIRECT` / `REJECT` 恒定可用。
+2. 通过模块覆写：模块的 `[Rule]` 会插入到主配置规则之前，优先级高于机场自带规则，且不受订阅更新影响。按机场是否已有策略组二选一：
+   - `modules/Custom.sgmodule`：零依赖，仅用 `DIRECT` / `REJECT`，任何配置下都能加载。
+   - `modules/FlowerCloud.sgmodule`：按策略组分流，依赖机场存在 `Proxies`、`OpenAI` 组。
+3. 模块中引用策略组时必须确认机场配置存在同名组；Surge 无内置 `PROXY` 策略，仅 `DIRECT` / `REJECT` 恒定可用。引用不存在的组会导致整个模块加载失败。
+   - 机场组名不同时，只改模块内 `RULE-SET` 行末尾的组名，不改规则文件内容（对应第 9 节「不随意改业务规则里的组名」）。
+   - 补充分流模块只收录机场未覆盖的规则（去广告 / Claude / Gemini 等）；机场自带的 Google、YouTube、Netflix、Telegram、Apple、China 保持注释状态，避免重复加载。
 4. 需要用本仓库 `surge.conf` 作主配置时，用 `[Proxy Group]` 的 `policy-path` 引入机场订阅。**机场订阅链接含 token，本仓库为公开仓库，禁止提交该链接**。
 
 ---
