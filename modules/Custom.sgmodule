@@ -1,0 +1,16 @@
+#!name=Custom Rules
+#!desc=个人自定义规则覆写。配合机场托管配置（Managed Config）使用：模块规则会插入到主配置规则之前，优先级更高，且不受机场订阅更新影响。
+#!author=chenxia31
+#!repo=https://github.com/chenxia31/surge-conf
+#!category=chenxia31
+
+[Rule]
+# 自定义直连（优先级最高）
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/custom.list,DIRECT
+
+# 自定义拦截
+RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/reject.list,REJECT
+
+# 需要指定策略组时，取消注释并确保机场配置中存在同名策略组，
+# 否则模块会加载失败（Surge 无内置 PROXY 策略，只有 DIRECT / REJECT）。
+# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/OpenAI.list,Proxies

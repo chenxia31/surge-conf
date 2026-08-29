@@ -50,6 +50,7 @@
 | SafeRedirect | `modules/SafeRedirect.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/SafeRedirect.sgmodule` |
 | Upgrade | `modules/Upgrade.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Upgrade.sgmodule` |
 | BlockHTTPDNS | `modules/BlockHTTPDNS.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/BlockHTTPDNS.sgmodule` |
+| Custom Rules（个人规则覆写） | `modules/Custom.sgmodule` | `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Custom.sgmodule` |
 
 ## 机场模板策略组基线
 
@@ -62,17 +63,39 @@
 
 ## 使用方式
 
+### 方式一：直接订阅主配置
+
 在 Surge 中导入主配置链接即可使用，后续你只需要维护仓库内容并推送到 GitHub，设备端会按链接更新。
+
+注意 `surge.conf` 不含 `[Proxy]` 节点，地区组（HK/JP/SG/TW/US）默认为空。接入机场时在 `[Proxy Group]` 用 `policy-path` 引入订阅，例如：
+
+```
+HK = select, policy-path=<机场订阅链接>, policy-regex-filter=香港|HK|Hong
+```
+
+机场订阅链接自带 token，**不要提交到本仓库**（本仓库为公开仓库），仅在本地配置中填写。
+
+### 方式二：机场托管配置 + 本仓库模块覆写（推荐）
+
+若主配置使用机场下发的托管配置（首行含 `#!MANAGED-CONFIG ... strict=true`），Surge 会禁止本地编辑，手改规则也会被订阅更新覆盖。此时不要改机场配置，改为安装本仓库的覆写模块：
+
+`https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Custom.sgmodule`
+
+Surge → 模块 → 从 URL 安装。模块的 `[Rule]` 会插入到主配置规则**之前**，优先级更高，且不受机场订阅更新影响。之后所有个人规则只维护 `rules/custom.list` 与 `rules/reject.list` 并推送到 `main` 即可。
+
+模块内引用策略组时，必须确保机场配置中存在同名策略组；Surge 无内置 `PROXY` 策略，只有 `DIRECT` / `REJECT` 恒定可用。
 
 ## 规则新增示例
 
-在 `rules/custom.list` 追加规则：
+RULE-SET 文件内每行**不带策略**，策略由引用方（`surge.conf` 的 `RULE-SET` 语句或 `Custom.sgmodule`）指定。
 
-`DOMAIN-SUFFIX,github.com,DIRECT`
+在 `rules/custom.list` 追加直连规则：
 
-在 `rules/reject.list` 追加规则：
+`DOMAIN-SUFFIX,github.com`
 
-`DOMAIN-SUFFIX,example-ads.com,REJECT`
+在 `rules/reject.list` 追加拦截规则：
+
+`DOMAIN-SUFFIX,example-ads.com`
 
 ## 建议维护流程
 

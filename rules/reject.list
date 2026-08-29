@@ -1,5 +1,5 @@
-# Ads / telemetry examples
-DOMAIN-SUFFIX,doubleclick.net,REJECT
-DOMAIN-SUFFIX,googlesyndication.com,REJECT
-DOMAIN-SUFFIX,app-measurement.com,REJECT
-
+# 自定义拦截规则（广告 / 遥测）
+# 注意：RULE-SET 文件内每行不带策略，策略由引用方指定为 REJECT
+DOMAIN-SUFFIX,doubleclick.net
+DOMAIN-SUFFIX,googlesyndication.com
+DOMAIN-SUFFIX,app-measurement.com

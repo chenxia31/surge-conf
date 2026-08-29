@@ -104,6 +104,15 @@ Claude 在维护机场订阅时，策略组命名与分流应优先对齐以下�
    - `rules/sets/iPhone240608-Local-PROXY.list`
 3. 在 `surge.conf` 中通过 `RULE-SET` 引用以上文件，避免仅依赖外链。
 
+## 11. 机场托管配置（Managed Config）场景
+
+若用户主配置为机场下发的托管配置（首行含 `#!MANAGED-CONFIG`，通常 `strict=true`），Surge 禁止本地编辑，手改会被订阅更新覆盖。**不要尝试改机场配置**，按以下方式处理：
+
+1. 个人规则统一写入 `rules/custom.list`（直连）与 `rules/reject.list`（拦截），格式为不带策略的 RULE-SET 行。
+2. 通过 `modules/Custom.sgmodule` 覆写：模块的 `[Rule]` 会插入到主配置规则之前，优先级高于机场自带规则，且不受订阅更新影响。
+3. 模块中引用策略组时必须确认机场配置存在同名组；Surge 无内置 `PROXY` 策略，仅 `DIRECT` / `REJECT` 恒定可用。
+4. 需要用本仓库 `surge.conf` 作主配置时，用 `[Proxy Group]` 的 `policy-path` 引入机场订阅。**机场订阅链接含 token，本仓库为公开仓库，禁止提交该链接**。
+
 ---
 
 如无额外说明，Claude 按本文档作为默认维护规范执行。

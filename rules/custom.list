@@ -1,7 +1,7 @@
-# Add your custom rules here
+# 自定义直连规则
+# 注意：RULE-SET 文件内每行不带策略，策略由引用方（surge.conf / Custom.sgmodule）指定
 # Domain
-DOMAIN-SUFFIX,example.com,DIRECT
+DOMAIN-SUFFIX,example.com
 
 # Keyword
-DOMAIN-KEYWORD,internal,DIRECT
-
+DOMAIN-KEYWORD,internal
