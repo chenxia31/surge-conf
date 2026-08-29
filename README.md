@@ -87,11 +87,11 @@ HK = select, policy-path=<机场订阅链接>, policy-regex-filter=香港|HK|Hon
 | 模块 | 适用场景 | 依赖 |
 |---|---|---|
 | `Custom.sgmodule` | 只想加直连 / 拦截规则；或不确定机场组名 | 无（仅用 `DIRECT` / `REJECT`） |
-| `FlowerCloud.sgmodule` | 机场已有 `Proxies` / `OpenAI` 等策略组，需要按组分流 | 机场存在 `Proxies`、`OpenAI` |
+| `FlowerCloud.sgmodule` | 机场已有策略组，需要按组分流（**已按 Flower Cloud 实际组名核对**） | 机场存在 `Proxies`、`OpenAI` |
 
 #### 步骤
 
-1. **确认策略组名**（仅 `FlowerCloud.sgmodule` 需要）。在 Surge 首页「策略」页查看机场配置实际的组名，确保存在 `Proxies` 与 `OpenAI`。组名不一致时，修改 `modules/FlowerCloud.sgmodule` 中对应 `RULE-SET` 行末尾的组名即可，规则文件本身不用动。
+1. **确认策略组名**（仅 `FlowerCloud.sgmodule` 需要）。当前 Flower Cloud（`Flower_Trojan.conf`）已核对，存在 `Proxies`、`OpenAI`、`YouTube`、`Google`、`Netflix`、`Telegram`、`Apple`、`Disney`、`Hbomax`、`Bahamut`、`Bilibili`、`Spotify`、`Steam`、`Microsoft`、`PayPal`、`Final` 及 `HK`/`JP`/`SG`/`TW`/`US`，模块可直接使用。更换机场时在 Surge「策略」页复核，组名不一致只需改模块中对应 `RULE-SET` 行末尾的组名，规则文件不用动。
 2. **安装模块**：Surge → 模块 → 从 URL 安装，填入对应 Raw 链接：
    - `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/Custom.sgmodule`
    - `https://raw.githubusercontent.com/chenxia31/surge-conf/main/modules/FlowerCloud.sgmodule`
@@ -100,7 +100,9 @@ HK = select, policy-path=<机场订阅链接>, policy-regex-filter=香港|HK|Hon
 #### 注意事项
 
 - Surge 无内置 `PROXY` 策略，只有 `DIRECT` / `REJECT` 恒定可用。模块引用了不存在的策略组会导致**整个模块加载失败**并报错。
-- `FlowerCloud.sgmodule` 只补机场未覆盖的部分（去广告、Claude / Gemini 等 AI 服务、个人规则）。Google、YouTube、Netflix、Telegram、Apple、China 等机场自带的规则已在模块中注释，重复引入只会增加加载时间，按需开启。
+- `FlowerCloud.sgmodule` 只补机场未覆盖的部分：域名级去广告、Claude / Gemini / BardAI、个人规则。机场已覆盖 OpenAI、YouTube、Google、Netflix、Telegram、Apple、China 等，重复引入只会增加加载时间。
+- **模块规则会插入到主配置规则的最前面**，因此模块中的去广告会先于机场的 `Unbreak.list` 命中。`Unbreak` 是修复去广告误杀的白名单，模块中已在去广告之前重新引入同一份列表。若仍出现误杀，把域名加进 `rules/custom.list`（该规则集排在模块首位，优先级最高）。
+- 机场订阅链接中的 `token`、`[Proxy]` 段的节点密码、`ca-p12` 私钥均为凭证，**禁止提交到本仓库**（public）。模块中引用的 `getruleset` 链接不含 token，可以安全公开。
 - 若某个策略组在机场配置中确实不存在，可在模块中用 `[Proxy Group]` 段自建一个指向机场已有组的别名组，避免改动规则引用。
 
 ## 规则新增示例

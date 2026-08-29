@@ -115,7 +115,10 @@ Claude 在维护机场订阅时，策略组命名与分流应优先对齐以下�
 3. 模块中引用策略组时必须确认机场配置存在同名组；Surge 无内置 `PROXY` 策略，仅 `DIRECT` / `REJECT` 恒定可用。引用不存在的组会导致整个模块加载失败。
    - 机场组名不同时，只改模块内 `RULE-SET` 行末尾的组名，不改规则文件内容（对应第 9 节「不随意改业务规则里的组名」）。
    - 补充分流模块只收录机场未覆盖的规则（去广告 / Claude / Gemini 等）；机场自带的 Google、YouTube、Netflix、Telegram、Apple、China 保持注释状态，避免重复加载。
-4. 需要用本仓库 `surge.conf` 作主配置时，用 `[Proxy Group]` 的 `policy-path` 引入机场订阅。**机场订阅链接含 token，本仓库为公开仓库，禁止提交该链接**。
+4. 需要用本仓库 `surge.conf` 作主配置时，用 `[Proxy Group]` 的 `policy-path` 引入机场订阅。
+5. **排序陷阱**：模块规则插入在主配置规则最前面，会抢在机场 `Unbreak.list`（去广告误杀白名单）之前命中。凡在模块中加入去广告规则集，必须先重新引入 Unbreak，否则会出现误拦截。
+6. **凭证红线**：机场订阅链接的 `token`、`[Proxy]` 段的节点密码 / UUID、`ca-p12` 私钥与 `ca-passphrase` 一律不得写入本仓库任何文件（public repo）。机场的 `getruleset` 链接不含 token，可以引用。
+7. Flower Cloud（`Flower_Trojan.conf`）已核对存在的策略组：`Proxies` `YouTube` `Disney` `Hbomax` `Netflix` `Bahamut` `Bilibili` `Spotify` `Steam` `Telegram` `Google` `Microsoft` `OpenAI` `PayPal` `Apple` `Final` `HK` `JP` `SG` `TW` `US`。机场自带规则集覆盖 OpenAI / YouTube / Google / Netflix / Telegram / Apple / China / LocalAreaNetwork，补充模块不重复引入。
 
 ---
 

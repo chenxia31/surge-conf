@@ -1,34 +1,38 @@
 #!name=FlowerCloud Supplement
-#!desc=机场托管配置补充分流。规则指向 Flower Cloud 已有策略组，只补机场未覆盖的部分（去广告 / AI 服务 / 个人规则），不重复机场自带的 Google、YouTube、Netflix、Telegram、Apple、China 等规则。
+#!desc=Flower Cloud 托管配置补充分流。策略组名已按 Flower_Trojan.conf 核对。仅补机场未覆盖的部分（域名级去广告 / Claude / Gemini / 个人规则），机场已有的 YouTube、Google、Netflix、Telegram、Apple、China 等不重复引入。
 #!author=chenxia31
 #!repo=https://github.com/chenxia31/surge-conf
 #!category=chenxia31
 
-# 依赖的策略组（必须在机场托管配置中存在，否则模块加载失败）：
-#   Proxies, OpenAI
-# 若机场组名不同，只需修改下方各行末尾的组名。
+# 依赖策略组（已确认存在于 Flower_Trojan.conf）：Proxies、OpenAI
+#
+# 注意：模块规则会插入到主配置 [Rule] 的最前面，因此本模块的 Advertising
+# 会先于机场的 Unbreak.list 命中。Unbreak 是用来修复去广告规则误杀的白名单，
+# 必须排在 Advertising 之前，故下方重新引入同一份列表（与机场配置同源，链接不含 token）。
 
 [Rule]
-# --- 个人规则（优先级最高）---
+# --- 1. 个人规则（最高优先级，误杀时把域名加到 custom.list 即可救回）---
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/custom.list,DIRECT
+
+# --- 2. 误杀白名单（必须在去广告之前）---
+RULE-SET,https://api-huacloud.com/getruleset?type=1&url=UHJvZmlsZXMvU3VyZ2UvUnVsZXNldC9VbmJyZWFrLmxpc3Q,DIRECT,update-interval=86400
+
+# --- 3. 个人分流（来自 Quantumult X iPhone-240608 profile）---
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/iPhone240608-Local-DIRECT.list,DIRECT
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/iPhone240608-Local-PROXY.list,Proxies
 
-# --- 去广告（机场配置通常不带）---
+# --- 4. 域名级去广告（机场只有 URL Rewrite 层，无域名级拦截）---
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/reject.list,REJECT
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Advertising.list,REJECT
 
-# --- AI 服务（机场多数只覆盖 OpenAI，Claude / Gemini 需补充）---
-RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/OpenAI.list,OpenAI
+# --- 5. AI 服务（机场仅覆盖 OpenAI，Claude / Gemini / BardAI 需补充）---
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Claude.list,OpenAI
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Gemini.list,OpenAI
 RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/BardAI.list,OpenAI
 
-# --- 以下规则机场托管配置一般已覆盖，重复引入只会增加加载时间，按需取消注释 ---
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Google.list,Google
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/YouTube.list,YouTube
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Telegram.list,Telegram
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Netflix.list,Netflix
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/Apple.list,DIRECT
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/WeChat.list,DIRECT
-# RULE-SET,https://raw.githubusercontent.com/chenxia31/surge-conf/main/rules/sets/China.list,DIRECT
+# --- 机场已覆盖，无需重复引入（保留备查）---
+# OpenAI    → 机场 Extra/OpenAI/OpenAI.list  → OpenAI
+# YouTube   → 机场 StreamingMedia/Video/YouTube.list → YouTube
+# Google    → 机场 Extra/Google/Google.list  → Google
+# Netflix / Disney / HBO / Bahamut / Spotify / Steam / Telegram / Microsoft / PayPal / Apple
+# China / LocalAreaNetwork → DIRECT，另有 GEOIP,CN,DIRECT 与 FINAL,Final
